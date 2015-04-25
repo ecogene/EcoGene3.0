@@ -1,0 +1,95 @@
+<?php
+// $Id: page_example.module,v 1.13 2007/10/17 19:38:36 litwol Exp $
+
+/**
+ * @file
+ * This is an example outlining how a module can be used to display a
+ * custom page at a given URL.
+ */
+
+/**
+ * Implementation of hook_help().
+ *
+ * Throughout Drupal, hook_help() is used to display help text at the top of
+ * pages. Some other parts of Drupal pages get explanatory text from these hooks
+ * as well. We use it here to illustrate how to add help text to the pages your
+ * module defines.
+ */
+function ecogene_geneindex_help($path, $arg) {
+  switch ($path) {
+//    case 'foo':
+      // Here is some help text for a custom page.
+//      return t('This sentence contains all the letters in the English alphabet.');
+  }
+}
+
+
+function ecogene_geneindex_menu() {
+
+  	$items['gene'] = array(
+    'description' => 'Gene index',
+    'page callback' => 'ecogene_geneindex_content',
+    'title' => 'Gene Index',
+    'access arguments' => array('access content')
+  );
+
+  return $items;
+}
+
+function ecogene_geneindex_content() {
+
+	$content  = '<div class="eco_geneindex">';
+	$content .= '<p>This is an alphabetical index to the individual GenePages on EcoGene. Point at a gene name for complete list. Alternatively, try EcoSearch to retrieve GenePages.</p>
+	</div>';
+	
+	$content .= getGeneIndex();
+	return $content;	
+}
+function getGeneIndex()
+{
+global $base_url;
+	// Edit to configure PHP Drop Down Menu
+		
+	// Connecting to database and get gene names and eg_ids 
+ 	db_set_active('ecogene');
+ 	$dbTable = "t_gene";  
+	$query = db_query("SELECT * FROM ".$dbTable." WHERE name != '' ORDER by name ASC");
+	
+	$maxsubmenu = 19; // max number of item in the submenu
+		
+	$i = 0;
+	$r = 0; $c = 0; // position of the row and column of the menu
+	$genepage_linker = $base_url."?q=gene/";
+	
+	
+	$content = '<div id="gene-menu-nav-contain" ><ul>';
+	foreach ($query as $row)
+	{
+		
+		if ((fmod($i, $maxsubmenu)) == 0) {
+			$content .= '<li><a href="'.$genepage_linker.$row->eg_id.'" title="'.$row->name.' gene page">'.$row->name.'</a><ul>';
+			
+		}else {
+			
+				$content .='<li><a href="'.$genepage_linker.$row->eg_id.'" title="'.$row->name.' gene page">'.$row->name.'</a></li>';
+		}	
+		
+		$i++;
+		
+		if ((fmod($i, $maxsubmenu)) == 0) {
+			$content .='</ul></li>';
+
+			
+		}
+		
+
+	}
+	if ((fmod($i, $maxsubmenu)) != 0) {
+			$content .='</ul></li>';
+
+	}
+	$content .= '</ul></div>';
+ 
+	db_set_active('default');
+	return $content;
+}

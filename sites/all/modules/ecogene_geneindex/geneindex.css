@@ -1,0 +1,126 @@
+@CHARSET "ISO-8859-1";
+/* $Id: node.css,v 1.18 2010/09/17 14:53:21 dries Exp $ */
+#gene-menu-nav-contain {
+
+		float:left;
+		position:relative;
+		font-size: 1.15em;
+		text-shadow: 0 1px #EEEEEE;
+    	margin: 0;
+    	padding: 0px 5px;
+		z-index:2;
+	}
+		#gene-menu-nav-contain ul {
+		margin: 0;
+		padding: 0;
+		z-index:3;
+	}
+		#gene-menu-nav-contain li a {
+			display:block;
+			padding:5px;
+			
+		}
+		#gene-menu-nav-contain li:hover, #gene-menu-nav-contain li a:focus, #gene-menu-nav-contain li a:active {
+			background:#EEE;
+		
+		}
+		
+		#gene-menu-nav-contain li {
+			display: inline-block;
+			list-style-type: none;
+			padding:0 5px; 
+			z-index:4;
+			width: 60px;
+		}
+		/* SAFARI-ONLY POSITIONING */
+			 /*\*/
+		 html>body*#gene-menu-nav-contain li {padding:0 3px;}
+			 /**/			
+		#gene-menu-nav-contain li ul {
+				background:#EEE;
+				border:0px solid #D2D2D2;
+				left: -999em;
+				position: absolute;
+				width: 136px;
+				z-index:998;
+		 		margin-left:-5px;
+		 
+			}
+				#gene-menu-nav-contain li ul li {
+					padding:3px 2px 3px 5px;
+					background:none !important;
+				}
+				#gene-menu-nav-contain li:hover ul a {
+					display:block;
+					width:60px;
+				}
+				#gene-menu-nav-contain li:hover ul a:hover {
+				
+				}
+			#gene-menu-nav-contain li:hover ul, #gene-menu-nav-contain  li.sfhover ul {
+				left:auto;
+				background:#EEE;
+				white-space:normal;
+				z-index:999;
+			}
+				#gene-menu-nav-contain li:hover ul a, #gene-menu-nav-contain  li.sfhover ul a {
+					display:block;
+					font-weight:normal !important;
+					width:60px; 
+				}
+				#gene-menu-nav-contain li:hover ul a:hover, #gene-menu-nav-contain  li.sfhover ul a:hover {
+					text-decoration:underline;
+				    font-weight:bold;
+				}
+
+
+#gene-menu-nav-contain li ul li {
+    background: none repeat scroll 0 0 transparent !important;
+    padding: 3px 2px 3px 5px;
+}
+
+/*
+
+#gene-menu-links {
+	font-size: 1.1em; 
+    margin: 0;
+    padding: 0 5px;
+}
+#gene-menu-links a {
+    float: left;
+    height: 2.4em;
+    line-height: 2.4em;
+    padding: 0 0.8em;
+    text-decoration: none;
+    text-shadow: 0 1px #EEEEEE;
+}
+
+#gene-menu-links a:hover, #gene-menu-links a:focus {
+	color: #111111;
+    background: none repeat scroll 0 0 rgba(72, 169, 228, 0.5);
+}
+#gene-menu-links a:active {
+    background: none repeat scroll 0 0 #FFFFFF;
+}
+#gene-menu-links li a.active {
+    border-bottom: medium none;
+}
+
+div.gene-links-wrapper {
+    display: block;
+    position: absolute;
+    z-index: 999;
+}
+.gene-links-wrapper {
+    font-size: normal !important;
+}
+
+#gene-menu-links li {
+    float: left;
+    list-style: none outside none;
+    margin: 0 1px;
+    padding: 0 1px;
+    width: 60px;
+}
+
+*/

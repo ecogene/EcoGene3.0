@@ -1,0 +1,10 @@
+; $Id: ecoarray.info,v 1.0 2010/01/07 05:50:55 dries Exp $
+name = EcoDownload
+description = Download.
+
+files[] = ecogene_download.module
+; stylesheets[all][] = ecogene_download.css
+
+version = 3.0
+project = "ecogene"
+core = 7.x

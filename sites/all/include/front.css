@@ -1,0 +1,26 @@
+#frontpage_content {
+   /* background: url("../images/bg/numbers_bg.png") repeat-y scroll 579px 0 #FFFFFF;*/
+    padding-bottom: 21px;
+}
+#frontpage_content h2 {
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: normal;
+}
+#frontpage_content_left {
+    float: left;
+    width: 580px;
+    clear: left;
+}
+#frontpage_content_left h2 {
+    background-color: #5E7630;
+    padding: 13px 10px;
+}
+#frontpage_content_right {
+    float: right;
+    width: 340px;
+}
+#frontpage_content_right h2 {
+    /*background: url("../images/bg/numbers_header_bg.png") repeat-y scroll 0 0 #B38000;*/
+    padding: 13px 18px;
+}

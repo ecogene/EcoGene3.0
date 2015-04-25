@@ -1,0 +1,10 @@
+; $Id: ecoarray.info,v 1.0 2010/01/07 05:50:55 dries Exp $
+
+name = EcoArray
+description = MicroArray.
+
+files[] = ecogene_array.module
+stylesheets[all][] = ecogene_array.css 
+version = 3.0
+project = "ecogene"
+core = 7.x

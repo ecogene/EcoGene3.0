@@ -1,0 +1,306 @@
+<?php
+// $Id: page_example.module,v 1.13 2007/10/17 19:38:36 litwol Exp $
+
+/**
+ * @file
+ * This is an example outlining how a module can be used to display a
+ * custom page at a given URL.
+ */
+
+/**
+ * Implementation of hook_help().
+ *
+ * Throughout Drupal, hook_help() is used to display help text at the top of
+ * pages. Some other parts of Drupal pages get explanatory text from these hooks
+ * as well. We use it here to illustrate how to add help text to the pages your
+ * module defines.
+ */
+function ecogene_blast_help($path, $arg) {
+  switch ($path) {
+//    case 'foo':
+      // Here is some help text for a custom page.
+//      return t('This sentence contains all the letters in the English alphabet.');
+  }
+}
+
+
+function ecogene_blast_menu() {
+
+  	$items['ecoblast'] = array(
+    'description' => 'EcoGene blast search page',
+    'page callback' => 'ecogene_blast_content',
+    'title' => 'Blast Search',
+    'access arguments' => array('access content')
+  );
+
+  return $items;
+}
+
+function ecogene_blast_content() {
+
+	db_set_active("refseq");
+	$table = 'summary';
+	
+	
+	$numberOfEnterobacteriaceae = count(db_query( "SELECT accession FROM summary WHERE `order`=1 AND `genome`='chromosome'")->fetchAll());
+	$numberOfSalmonella = count(db_query( "SELECT accession FROM summary WHERE `order`=5 AND `genome`='chromosome'")->fetchAll());
+	$numberOfEcoli = count(db_query( "SELECT accession FROM summary WHERE `order`=10 AND `genome`='chromosome'")->fetchAll());
+	
+	db_set_active("default");
+	
+	$content = '<div class="eco_blast" style="padding: 10px; border: thin solid silver; background-color: #efefef;">
+
+<h2>Choose program to use and database to search:</h2>
+
+<form action="/blast/blast.cgi" method="post" id="MainBlastForm" enctype= "multipart/form-data">
+<p>
+<a href="/blast/docs/blast_program.html">Program</a>
+<select name = "PROGRAM">
+    <option>blastp</option> 
+    <option>blastn</option> 
+    <option>blastx</option> 
+    <option>tblastn</option> 
+    <option>tblastx</option> 
+</select> &nbsp;&nbsp;&nbsp;&nbsp;
+<a href="/blast/docs/blast_databases.html">Database</a>
+<select name = "DATALIB">
+    <option value = "EcoProt.lib">EcoProt</option>
+    <option value = "EcoGene.lib">EcoGene</option> 
+    <option value = "ecoli2.seq">E. coli K-12 MG1655(Seq) U00096.2 Genome</option>
+    <option value = "ecoli3.seq">E. coli K-12 MG1655(Seq) U00096.3 Genome</option>
+    <option value = "ecoli_genomes">'.$numberOfEcoli.' E. coli (Non K-12) Complete Genomes</option>
+    <option value = "ecoli_aa">'.$numberOfEcoli.' E. coli (Non K-12) Complete Proteomes</option>
+    <option value = "salmonella_lt2">Salmonella typhimurium LT2 Genome</option>
+    <option value = "salmonella_lt2_aa">Salmonella typhimurium LT2 Proteome</option>
+    <option value = "salmonella_genomes">'.$numberOfSalmonella.' Salmonella enterica Complete Genomes</option>
+    <option value = "salmonella_aa">'.$numberOfSalmonella.' Salmonella enterica Complete Proteomes</option>
+    <option value = "enterobacteriaceae">'.$numberOfEnterobacteriaceae.' Enterobacteriaceae (No E. coli or S. enterica) Complete Genomes</option>
+    <option value = "enterobacteriaceae_aa">'.$numberOfEnterobacteriaceae.' Enterobacteriaceae (No E. coli or S. enterica) Complete Proteomes</option>';
+// <option value = "ecoli.seq">E. coli K-12 MG1655 M54 Genome</option>	
+//    <option value = "14_coli_aa">14 E. coli Complete Proteomes</option>
+//    <option value = "14_coli_genomes">14 E. coli Complete Genomes</option>
+//    <option value = "12_unfin_coli">12 E. coli Unfinished Genomes</option>
+//    <option value = "salty.seq">Salmonella typhimurium LT2 Genome</option>
+//    <option value = "5_Sal_genomes">5 Salmonella Complete Genomes</option>
+//    <option value = "17_other_entero">17 Enterobacteriales Complete Genomes</option>
+//    <option value = "300_unfin_micro">300 Microbial Unfinished Genomes</option>
+//
+//    <option value = "nr">NCBI NR Non-Redundant Protein Sequence Database</option>
+//    <option value = "nr_env_nr">NCBI NR + Env_NR: NR plus Environmental Proteome</option>
+//    <option value = "nt">NCBI NT Non-Redundant DNA Sequence Database</option>
+
+$content .= '<option value = "uniref100">UniProt UniRef100 Proteome</option>
+    <option value = "sp_tr">EBI SP+TR Complete SwissProt and TrEMBL</option>
+</select>
+</p>
+<p>
+Enter sequence below in <a href="/blast/docs/fasta.html">FASTA</a>  format Or load it from disk <input type="file" name="SEQFILE" />
+<br />
+<textarea name="SEQUENCE" rows="6" cols="80"></textarea>
+</p>
+<p>
+Set subsequence: From &nbsp;&nbsp;<input type="text" name="QUERY_FROM" value="" size="10" /> &nbsp;&nbsp;&nbsp;&nbsp; To <input type="text" name="QUERY_TO" value="" size="10" />
+</p>
+<p>
+<input type="submit" value="Search" /> <input type="button" value="Clear sequence" onclick="this.form.SEQUENCE.value=\'\';this.form.QUERY_FROM.value=\'\';this.form.QUERY_TO.value=\'\';this.form.SEQUENCE.focus();" />
+</p>
+
+
+<h2>Search Options:</h2>
+<p>
+The query sequence is not <a href="/blast/docs/filtered.html">filtered</a> for low complexity regions by default. Please be careful interpreting your results, or add the filter.
+</p>
+<table>
+<tr>
+<td>
+<a href="/blast/docs/newoptions.html#filter">Filter</a> 
+</td>
+<td>
+<input type="checkbox" value="L" name="FILTER" /> Low complexity 
+ <input type="checkbox" value="m" name="FILTER" /> Mask for lookup table only 
+ </td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/newoptions.html#expect">Expect</a>
+</td>
+<td>
+<select name = "EXPECT">
+    <option>0.0001</option> 
+    <option>0.01</option> 
+    <option>1</option> 
+    <option selected="selected"> 10</option> 
+    <option>100</option> 
+    <option>1000</option> 
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/matrix_info.html">Matrix</a>
+</td>
+<td>
+<select name = "MAT_PARAM">
+    <option value = "PAM30	 9	 1"> PAM30 </option>
+    <option value = "PAM70	 10	 1"> PAM70 </option> 
+    <option value = "BLOSUM80	 10	 1"> BLOSUM80 </option>
+    <option selected="selected" value = "BLOSUM62	 11	 1"> BLOSUM62 </option>
+    <option value = "BLOSUM45	 14	 2"> BLOSUM45 </option>
+</select>
+<input type="checkbox" name="UNGAPPED_ALIGNMENT" value="is_set" /> Perform ungapped alignment 
+</td>
+</tr>
+</table>
+
+
+<h2>View Options:</h2>
+<table>
+<tr>
+<td>
+<input type="checkbox" name="OVERVIEW"  checked="checked" /> <a href="/blast/docs/newoptions.html#graphical-overview">Graphical Overview</a>
+</td>
+<td>
+<a href="/blast/docs/options.html#alignmentviews">Alignment view</a>
+<select name = "ALIGNMENT_VIEW">
+    <option value="0">Pairwise</option>
+    <option value="1">master-slave with identities</option>
+    <option value="2">master-slave without identities</option>
+    <option value="3">flat master-slave with identities</option>
+    <option value="4">flat master-slave without identities</option>
+    <option value="7">BLAST XML</option>
+    <option value="9">Hit Table</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/newoptions.html#descriptions">Descriptions</a>
+<select name = "DESCRIPTIONS">
+    <option>0</option> 
+    <option>10</option> 
+    <option>50</option> 
+    <option selected="selected">100</option> 
+    <option>250</option> 
+    <option>500</option> 
+</select>
+</td>
+<td>
+<a href="/blast/docs/newoptions.html#alignments">Alignments</a>
+<select name = "ALIGNMENTS">
+    <option>0</option> 
+    <option>10</option> 
+    <option selected="selected">50</option> 
+    <option>100</option> 
+    <option>250</option> 
+    <option>500</option> 
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/color_schema.html">Color schema</a>
+<select name = "COLOR_SCHEMA">
+    <option selected="selected" value = "0"> No color schema</option> 
+    <option value = "1">Color schema 1</option> 
+    <option value = "2">Color schema 2</option> 
+    <option value = "3">Color schema 3</option> 
+    <option value = "4">Color schema 4</option> 
+    <option value = "5">Color schema 5</option> 
+    <option value = "6">Color schema 6</option> 
+</select>
+</td>
+<td>
+</td>
+</tr>
+</table>
+
+
+<h2>Advanced Options:</h2>
+<table>
+<tr>
+<td>
+<a href="/blast/docs/newoptions.html#gencodes">Query Genetic Codes (blastx only)</a> 
+</td>
+<td>
+<select name = "GENETIC_CODE">
+ <option>Standard (1)</option>
+ <option>Vertebrate Mitochondrial (2)</option> 
+ <option>Yeast Mitochondrial (3)</option>
+ <option>Mold Mitochondrial; ... (4)</option>
+ <option>Invertebrate Mitochondrial (5)</option> 
+ <option>Ciliate Nuclear; ... (6)</option> 
+ <option>Echinoderm Mitochondrial (9)</option> 
+ <option>Euplotid Nuclear (10)</option> 
+ <option>Bacterial (11)</option> 
+ <option>Alternative Yeast Nuclear (12)</option> 
+ <option>Ascidian Mitochondrial (13)</option> 
+ <option>Flatworm Mitochondrial (14)</option> 
+ <option>Blepharisma Macronuclear (15)</option> 
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/newoptions.html#gencodes">Database Genetic Codes (tblast[nx] only)</a>
+</td>
+<td>
+<select name = "DB_GENETIC_CODE">
+ <option>Standard (1)</option>
+ <option>Vertebrate Mitochondrial (2)</option>
+ <option>Yeast Mitochondrial (3)</option>
+ <option>Mold Mitochondrial; ... (4)</option>
+ <option>Invertebrate Mitochondrial (5)</option>
+ <option>Ciliate Nuclear; ... (6)</option>
+ <option>Echinoderm Mitochondrial (9)</option>
+ <option>Euplotid Nuclear (10)</option>
+ <option>Bacterial (11)</option>
+ <option>Alternative Yeast Nuclear (12)</option>
+ <option>Ascidian Mitochondrial (13)</option>
+ <option>Flatworm Mitochondrial (14)</option>
+ <option>Blepharisma Macronuclear (15)</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/oof_notation.html">Frame shift penalty for blastx</a>
+</td>
+<td>
+<select name = "OOF_ALIGN"> 
+ <option>6</option>
+ <option>7</option>
+ <option>8</option>
+ <option>9</option>
+ <option>10</option>
+ <option>11</option>
+ <option>12</option>
+ <option>13</option>
+ <option>14</option>
+ <option>15</option>
+ <option>16</option>
+ <option>17</option>
+ <option>18</option>
+ <option>19</option>
+ <option>20</option>
+ <option>25</option>  
+ <option>30</option>
+ <option>50</option>
+ <option>1000</option>
+ <option selected="selected" value = "0"> No OOF</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<a href="/blast/docs/full_options.html">Other advanced options:</a> 
+</td>
+<td>
+<input type="text" name="OTHER_ADVANCED" value="" maxlength="50" />
+</td>
+</tr>
+</table>
+</form>
+
+</div>';
+  	return $content;	
+}

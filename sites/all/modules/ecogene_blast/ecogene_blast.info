@@ -1,0 +1,11 @@
+; $Id: ecoarray.info,v 1.0 2011/3/8 15:25:55 dries Exp $
+name = EcoBlast
+description = EcoGene blast search.
+
+files[] = ecogene_blast.module
+
+version = 3.0
+project = "ecogene"
+core = 7.x
+
+

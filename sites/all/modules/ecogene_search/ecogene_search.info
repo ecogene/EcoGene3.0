@@ -1,0 +1,11 @@
+; $Id: ecogene_search.info,v 1.0 2010/01/07 05:50:55 dries Exp $
+name = EcoSearch
+description = Search.
+
+files[] = ecogene_search.module
+stylesheets[all][] = ecogene_search.css
+
+version = 3.0
+project = "ecogene"
+core = 7.x
+

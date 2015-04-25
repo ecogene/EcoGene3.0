@@ -1,0 +1,201 @@
+@CHARSET "ISO-8859-1";
+/* $Id: node.css,v 1.18 2010/09/17 14:53:21 dries Exp $ */
+#download-keio-form div.form-item-files-userfile
+{
+	padding-left: 2em;
+}
+div#demo_downloadtable{
+	width:850px;
+	overflow-x:scroll;
+	
+}
+div#demo_downloadtable td{
+	white-space: nowrap;
+}
+
+#download-dbtable-form #edit-filter .form-radios div,
+#download-primer-form  .form-radios div,
+div#edit-clo-addon-type	div.form-type-radio
+{	
+	float: left;
+	width: 150px;
+	clear: right;
+}
+#edit-gene-type  div{
+	
+	width: 145px;
+}
+
+#download-primer-form  div.form-type-textfield {
+	padding-left: 10px;
+	float: left;
+}
+#download-primer-form  div.form-item-start-len, form-item-clo-addon-type {
+	clear: left;
+}
+fieldset#edit-cloning,#edit-deletion div, #edit-cloning div.form-item-clo-stop-offset,
+#edit-cloning div.form-item-clo-addon-type
+{
+	clear: left;
+}
+fieldset#edit-cloning,fieldset#edit-deletion{
+	
+	background: none repeat scroll 0 0 #F4F4F4;
+	margin: 0;
+	margin-bottom: 10px;
+	
+	border : 0;
+}
+fieldset#edit-deletion{
+margin-left: 15px;
+}
+fieldset#edit-cloning legend,fieldset#edit-deletion legend{
+	
+	background: none repeat scroll 0 0 #F4F4F4;
+	border: 0;
+	color: #3B3BFB;
+	
+}
+#edit-cloning{
+	width: 430px;
+	height: 340px;
+	float: left;
+}
+#edit-deletion{
+	width: 390px;
+	height: 340px;
+	float: left;
+}
+#edit-radio{
+	clear: both;
+}
+#edit-clo-offset-type-start div.form-item-clo-offset-type-start
+{
+	float: left;
+	width: 76px;
+	padding-left: 4px;
+	clear: none;
+	visibility: visible;
+}
+
+#edit-clo-offset-type-start div.form-item-clo-offset-type-start label
+{
+	
+	width: 52px;
+	padding-top: 4px;
+	
+}
+#edit-clo-offset-type-stop div.form-item-clo-offset-type-stop	
+{
+		width: 75px;
+		padding-left: 5px;
+		clear: none;
+	
+		
+}
+fieldset#edit-cloning label,
+fieldset#edit-deletion label	{
+	font-size: 0.85em;
+}
+#download-intergene-form div.form-item-fields label{
+	margin-top: 2.5em;
+	
+}
+#edit-table-submit input{
+	cleat: both;
+}
+#download-dbtable-form #edit-fields-1 div,
+#download-intergene-form .form-checkboxes div	 {
+	width: 260px;
+	border-bottom: 1px solid #CCCCCC;
+	float: left;
+	position: relative;
+	margin-top: 0em;
+	margin-botton: 0em;
+	padding: 0.2em;
+}
+#download-dbtable-form div.form-item-checkall
+{
+	clear: both;
+	float: left;
+	width: 260px;
+}
+#edit-sequence-filter label,
+#edit-intergene-region label	{
+	margin-top: 2em;
+	padding-bottom: 1em;
+}
+#edit-sequence-filter span.field-prefix {
+	 display: block;
+	 float: left;
+	width: 4em;
+}
+#edit-sequence-filter span.field-suffix {
+	
+	padding-left: 1em;
+}
+
+
+#download-primer-form #edit-select-field div.form-type-checkbox {
+	width: 200px;
+	border-bottom: 1px solid #CCCCCC;
+	float: left;
+	position: relative;
+	margin-top: 0em;
+	margin-botton: 0em;
+	padding: 0.2em;
+}
+/*
+#circle-map-form #edit-map-parameters >div>div{
+	 float: left;
+	  margin: 1em;
+}
+#circle-map-form #palette #primary_scheme,
+#circle-map-form #palette #input_s_div{
+	 width: 600px;
+	
+	  float: left;
+}
+#circle-map-form #palette #primary_scheme div{
+	
+	  float: left;
+}
+#circle-map-form #palette >div>div{
+	 float: left;
+	 margin: 0.2em;
+	 
+}
+#circle-map-form #palette >div>div.form-item{	
+	  clear: right;
+}
+#circle-map-form #edit-map-parameters #edit-catradiolen >div{
+	 float: left;	
+	 margin: 0.1em;
+}
+#circle-map-form #palette div.form-type-radio{
+	float: left;
+	margin: 0.2em;
+}
+*/
+#crossref_db_controls
+{
+	width: 35%;
+	float: left;
+	padding: 20px;
+	height: 400px;
+	overflow:auto;
+	
+}
+#crossref_uploadfile-controls
+{
+	float: left;
+	padding: 20px;
+	width: 55%;
+	
+}
+#crossref_result_controls, #edit-mapping-field-search
+{
+	margin-left:20px;
+	display:block;
+	clear: both;
+}

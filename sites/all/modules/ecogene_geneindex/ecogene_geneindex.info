@@ -1,0 +1,12 @@
+; $Id: ecoarray.info,v 1.0 2011/3/8 15:25:55 dries Exp $
+name = GeneIndex
+description = Gene index.
+
+files[] = ecogene_geneindex.module
+stylesheets[all][] = geneindex.css
+
+version = 3.0
+project = "ecogene"
+core = 7.x
+
+

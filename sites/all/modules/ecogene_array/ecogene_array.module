@@ -1,0 +1,618 @@
+<?php
+
+function ecogene_array_menu() {
+  $items['ecoarray'] = array(
+    'title' => 'EcoArray',        
+    'access arguments' => array('access content'),
+  	'page callback' => 'search_array_paper',
+//  	'file' => 'ecogene_array.pages.inc',
+    
+  );
+  $items['ecoarray/gene'] = array(
+    'title' => 'Genes',        
+    'page callback' => 'ecoarray_gene_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_array.pages.inc',
+//  'type' => MENU_LOCAL_TASK,
+    
+  );
+  
+  $items['ecoarray/paper'] = array(
+    'title' => 'Paper',        
+    'page callback' => 'search_paper_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_array.pages.inc',
+//  'type' => MENU_LOCAL_TASK,
+    
+  );
+   $items['ecoarray/paper/%'] = array(
+//   'title' => 'Title',
+    'title callback' => 'ecoarray_paper_title',    
+    'title arguments' => array(2),
+    'page callback' => 'ecoarray_paper_details',
+    'page arguments' => array(2),      
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_array.pages.inc',
+  	
+    
+  );
+  
+   $items['ecoarray/experiment/%/%'] = array(
+    'title callback' => 'ecoarray_experiment_title',    
+    'title arguments' => array(2,3),
+    'page callback' => 'ecoarray_experiment_details',
+    'page arguments' => array(2,3),      
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_array.pages.inc',
+    
+  );
+  
+  $items['ecoarray/search'] = array(
+    'title' => 'Search',        
+  	'access arguments' => array('access content'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  
+  $items['ecoarray/experiment'] = array(
+    'title' => 'Experiment',        
+    'page callback' => 'search_experiment_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_array.pages.inc',
+//  	'type' => MENU_LOCAL_TASK,
+    
+  );
+
+  
+//  $items['ecoarray/search/summary'] = array(
+//    'title' => 'Microarray Summary',
+//    'type' => MENU_DEFAULT_LOCAL_TASK,
+//    'weight' => -10,
+//    
+//  );
+//  $items['ecoarray/search/experiment'] = array(
+//    'title' => 'Microarray Experiment',        
+//    'page callback' => 'search_array_experiment',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_LOCAL_TASK,
+//  );
+//  $items['ecoarray/search/paper'] = array(
+//    'title' => 'Microarray Paper',        
+//    'page callback' => 'search_array_paper',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_LOCAL_TASK,
+//  );
+//  $items['ecoarray/summary'] = array(
+//    'title' => 'Summary',        
+//    'page callback' => 'search_summary_return',
+//    'access arguments' => array('access content'),
+//    'file' => 'ecogene_array.pages.inc',
+//    
+//  );
+
+
+//  $items['ecoarray/data'] = array(
+//    'title' => 'Data',        
+//    'page callback' => 'search_data_return',
+//    'access arguments' => array('access content'),
+//    'file' => 'ecogene_array.pages.inc',
+//    
+//  );
+
+  return $items;
+}
+
+function ecoarray_forms() {
+  $forms['ecoarray_paper_form']= array(
+    'callback' => 'ecoarray_paper_form',
+    'callback arguments' => array('ecoarray_paper_form'),
+  );
+  $forms['ecoarray_experiment_form']= array(
+    'callback' => 'ecoarray_experiment_form',
+    'callback arguments' => array('ecoarray_experiment_form'),
+  );
+  $forms['ecoarray_gene_form']= array(
+    'callback' => 'ecoarray_gene_form',
+    'callback arguments' => array('ecoarray_gene_form'),
+  );
+  
+  return $forms;
+}
+
+/**
+ * Generate the basic commenting form, for appending to a node or display on a separate page.
+ *
+ * @see comment_form_validate()
+ * @see comment_form_submit()
+ *
+ * @ingroup forms
+ */
+
+function ecoarray_paper_form_submit($form, &$form_state) {
+    unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+    unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+	$redirect = array('ecoarray/paper',array('query'=>$query));
+	$form_state['redirect'] = $redirect;
+
+ 
+}
+function ecoarray_paper_form($form, &$form_state) {
+
+	$item_per_page = isset($_REQUEST['item_per_page'])? $_REQUEST['item_per_page']: 10;
+	$authors = isset($_REQUEST['authors'])? $_REQUEST['authors']: '';
+	$keywords = isset($_REQUEST['keywords'])? $_REQUEST['keywords']: '';
+	$pubmed_ids = isset($_REQUEST['pubmed_ids'])? $_REQUEST['pubmed_ids']: '';
+	
+	
+	
+  $form['filter'] = array(
+  	'#type' => 'fieldset',
+  	'#title' => t('Search'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+  );
+  	
+  $form['filter']['authors'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 20,
+    '#default_value' => $authors,
+    '#attributes' => array('title' => t('Enter the authors you wish to search for.')),
+  	'#description' => t('Authors\' name'),
+  );
+  
+  $form['filter']['pubmed_ids'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 20,
+    '#default_value' => $pubmed_ids,
+    '#attributes' => array('title' => t('Enter the pubmed ids you wish to search for.')),
+  	'#description' => t('Pubmed IDs'),
+  );
+   $form['filter']['keywords'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 20,
+    '#default_value' => $keywords,
+    '#attributes' => array('title' => t('Enter the keywords you wish to search for.')),
+   	'#description' => t('Keywords'),
+  );
+  
+  $form['filter']['item_per_page'] = array(
+  	'#type' => 'select',
+  	'#title' => t('item per page'),
+   	'#title_display' => 'invisible',
+	'#default_value' => $item_per_page,
+  	'#options' => array(
+    	'10' => t('10'),
+    	'20' => t('20'),
+    	'50' => t('50'),
+		'100' => t('100'),
+		'all' => t('ALL'),
+  	),
+  	'#description' => t('Results per page'),
+  	'#attributes' => array('title' => t('Choose the number of results you wish to get per page.'),
+  							'OnChange' => "this.form.submit()"),
+	);
+	
+  $form['filter']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
+
+  $form['#submit'][] = 'ecoarray_paper_form_submit';
+
+  return $form;
+}
+
+function ecoarray_paper_form_clear($form, &$form_state)
+{
+	
+	$form_state['rebuild'] = TRUE;
+}
+function ecoarray_gene_form_submit($form, &$form_state)
+{
+//	$form_state['redirect'] = 'ecoarray/experiment';
+//	drupal_form_submit('ecoarray_experiment_form',$form_state);
+    unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+     unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+	$redirect = array('ecoarray/gene',array('query'=>$query));
+	$form_state['redirect'] = $redirect;
+	
+//	return $redirect;
+}
+function ecoarray_experiment_form_submit($form, &$form_state)
+{
+
+    unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+    unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+	$redirect = strstr(current_path(), 'ecoarray/experiment')? array('ecoarray/experiment',array('query'=>$query)):
+								array('topic/array_topic_gene_query',array('query'=>$query));
+	$form_state['redirect'] = $redirect;
+	
+//	return $redirect;
+}
+function ecoarray_gene_form($form, &$form_state) {
+
+	$item_per_page = isset($_REQUEST['item_per_page'])? $_REQUEST['item_per_page']: 20;
+	$genes = isset($_REQUEST['genes'])? $_REQUEST['genes']: '';
+	
+	$exp_types = isset($_REQUEST['exp_types'])? array_filter($_REQUEST['exp_types']): array('chemical','growth','gene');
+	
+	
+  $form['filter'] = array(
+  	'#type' => 'fieldset',
+  	'#title' => t('Search'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+  );
+  
+  $form['filter']['genes'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 50,
+    '#default_value' => $genes,
+    '#attributes' => array('title' => t('Enter the genes you wish to search for.'),
+  							'OnChange' => "this.form.submit()"),
+    '#description' => t('Gene names or EG IDs'),
+  
+  );
+
+  
+
+   $form['filter']['exp_types'] = array(
+  	'#type' => 'checkboxes',
+  	'#title' => t('Options'),
+   	'#title_display' => 'invisible',
+   '#default_value' => $exp_types,
+  	'#options' => array(
+    	'chemical' => t('Chemical'),
+    	'growth' => t('Growth'),
+    	'gene' => t('Gene')
+  	),
+  	'#description' => t('Experimental types'),
+  	'#attributes' => array('title' => t('Choose the experimental variables you wish to search for.'),
+  							'OnChange' => "this.form.submit()"),
+	);
+	$form['filter']['item_per_page'] = array(
+  	'#type' => 'select',
+  	'#title' => t('item per page'),
+   	'#title_display' => 'invisible',
+	'#default_value' => $item_per_page,
+  	'#options' => array(
+    	'10' => t('10'),
+    	'20' => t('20'),
+    	'50' => t('50'),
+		'100' => t('100'),
+		'all' => t('ALL'),
+  	),
+  	'#description' => t('Results per page'),
+  	'#attributes' => array('title' => t('Choose the number of results you wish to get per page.'),
+  							'OnChange' => "this.form.submit()"),
+	);
+  
+  
+  $form['filter']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
+  $form['#submit'][] = 'ecoarray_gene_form_submit';
+
+  return $form;
+}
+
+
+function ecoarray_experiment_form($form, &$form_state) {
+
+	$item_per_page = isset($_REQUEST['item_per_page'])? $_REQUEST['item_per_page']: 20;
+	$authors = isset($_REQUEST['authors'])? $_REQUEST['authors']: '';
+	$variables = isset($_REQUEST['variables'])? $_REQUEST['variables']: '';
+	$pubmed_ids = isset($_REQUEST['pubmed_ids'])? $_REQUEST['pubmed_ids']: '';
+	
+	$exp_types = isset($_REQUEST['exp_types'])? array_filter($_REQUEST['exp_types']): array('chemical','growth','gene');
+	
+
+	if(isset($_REQUEST['array_exp_ids']))	
+  	{
+  		
+		$form['array_exp_ids'] = 
+		array(	'#type' => 'hidden', 
+				'#value' => $_REQUEST['array_exp_ids']
+		);
+  	}
+	
+  $form['filter'] = array(
+  	'#type' => 'fieldset',
+  	'#title' => t('Search EcoArray Experiments'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+  );
+  
+  $form['filter']['pubmed_ids'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 20,
+    '#default_value' => $pubmed_ids,
+    '#attributes' => array('title' => t('Enter the pubmed_ids you wish to search for.')),
+  	'#description' => t('Pubmed IDs'),
+  );
+  
+  $form['filter']['authors'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 20,
+    '#default_value' => $authors,
+    '#attributes' => array('title' => t('Enter the authors you wish to search for.')),
+  	'#description' => t('Authors\' name'),
+  );
+  
+  $form['filter']['variables'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#title_display' => 'invisible',
+    '#size' => 20,
+    '#default_value' => $variables,
+    '#attributes' => array('title' => t('Enter the keywords you wish to search for.')),
+    '#description' => t('Experimental variables'),
+  );
+
+  
+
+   $form['filter']['exp_types'] = array(
+  	'#type' => 'checkboxes',
+  	'#title' => t('Options'),
+   	'#title_display' => 'invisible',
+//	'#default_value' => variable_get('exp_types', array('chemical','growth','gene')),
+   '#default_value' =>$exp_types,
+  	'#options' => array(
+    	'chemical' => t('Chemical'),
+    	'growth' => t('Growth'),
+    	'gene' => t('Gene')
+  	),
+  	'#description' => t('Experimental types'),
+  	'#attributes' => array('title' => t('Choose the experimental variables you wish to search for.'),
+  							'OnChange' => "this.form.submit()"),
+	);
+	$form['filter']['item_per_page'] = array(
+  	'#type' => 'select',
+  	'#title' => t('item per page'),
+   	'#title_display' => 'invisible',
+	'#default_value' =>$item_per_page,
+  	'#options' => array(
+    	'10' => t('10'),
+    	'20' => t('20'),
+    	'50' => t('50'),
+		'all' => t('Show all'),
+  	),
+  	'#description' => t('Results per page'),
+  	'#attributes' => array('onChange' => "this.form.submit()")
+	);
+  
+  
+  $form['filter']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
+  $form['#submit'][] = 'ecoarray_experiment_form_submit';
+
+  return $form;
+}
+
+//Creating a new element, 'new_name' in the $form_state['storage'] array
+// sets the value used to determine whether to show the new
+// fields on the form and hide the "Add another name" button.
+function my_module_my_form_new_name($form, &$form_state) {
+    $form_state['storage']['new_name'] = TRUE;
+    $form_state['rebuild'] = TRUE; // Calling this explicitly will cause the
+                                   // default submit function to be skipped
+                                   // and the form to be rebuilt.
+}
+
+function my_module_ecoarray_paper_form($form, &$form_state) {
+    unset ($form_state['values']);  // ensures fields are blank after reset
+                                    // button is clicked
+    unset ($form_state['storage']); // ensures the reset button removes the
+                                    // new_name part
+
+    $form_state['rebuild'] = TRUE; // Calling this explicitly will cause the
+                                   // default submit function to be skipped
+                                   // and the form to be rebuilt.
+}
+
+// Adds logic to validate the form to check the validity of the new fields,
+// if they exist.
+function my_module_my_form_validate($form, &$form_state) {
+    $year_of_birth = $form_state['values']['year_of_birth'];
+    $first_name = $form_state['values']['first'];
+    $last_name = $form_state['values']['last'];
+    if (!$first_name) {
+        form_set_error('first', 'Please enter your first name.');
+    }
+    if (!$last_name) {
+        form_set_error('last', 'Please enter your last name.');
+    }
+    if ($year_of_birth && ($year_of_birth < 1900 || $year_of_birth > 2000)) {
+        form_set_error('year_of_birth', 'Enter a year between 1900 and 2000.');
+    }
+    if ($form_state['storage']['new_name']) {
+        $year_of_birth = $form_state['values']['year_of_birth2'];
+        $first_name = $form_state['values']['first2'];
+        $last_name = $form_state['values']['last2'];
+        if (!$first_name) {
+            form_set_error('first2', 'Please enter your first name.');
+        }
+        if (!$last_name) {
+            form_set_error('last2', 'Please enter your last name.');
+        }
+        if ($year_of_birth && ($year_of_birth < 1900 || $year_of_birth > 2000)) {
+            form_set_error('year_of_birth2', 'Enter a year between 1900 and 2000.');
+        }
+    }
+}
+
+// Commenting out the line with the unset() function and
+// then adding a new set of name fields and submitting the form,
+// causes the form to no longer clear itself. The reason is that when
+// the 'storage' value is set, the $form_state['rebuild'] value will get
+// set to true  causing the form fields to get rebuilt with the
+// values found in $form_state['values'].
+function my_module_my_form_submit($form, &$form_state) {
+    unset($form_state['storage']);
+    drupal_set_message(t('The form has been submitted.'));
+}
+
+function search_array_summary() {
+
+	$content='<br>';
+	$content= $content."
+	<form enctype=\"multipart/form-data\" name=aForm action='?q=ecoarray/summary' method=POST>
+	
+	<font face=\"Arial, Helvetica, Verdana, sans-serif\" size=2>
+	<table align=left cellpadding=\"5\"  frame=\"box\" bgcolor=\"#eeeee\" width=500>
+       
+		<tr>
+			 <td><font size=2><b>Experiment Type:</b></font>			</td>
+			<td colspan=2><select name=exp_type>
+                  <option value='All'>&nbsp;&nbsp;&nbsp;All&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                    <option value='Chemical'>&nbsp;&nbsp;&nbsp;Chemical&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                    <option value='Growth'>&nbsp&nbsp;&nbsp;Growth&nbsp;&nbsp;&nbsp;&nbsp; </option>
+                    <option value='Gene'>&nbsp;&nbsp;&nbsp;Gene&nbsp;&nbsp;&nbsp;&nbsp; </option>
+                  </select>
+			 </td>
+		</tr>
+	
+		<tr> <td><font size=2><b>Thresholding Fold Value: </b></font></td>
+			  <td>
+    		<input name=\"catRadioB\" value=\">=\" checked=1 type=\"radio\">&nbsp;Vaule >=&nbsp;<br> 
+			<input name=\"catRadioB\" value=\"<=\" type=\"radio\">&nbsp;Vaule >=&nbsp;<br>
+  			</td>
+    		<td><INPUT name=\"variable\" value=\"2\"></td>
+  		</td>
+		</tr>
+
+		<tr>
+			<td colspan=3 align=center>
+			<input type=\"submit\" name=\"submit\" value=\"Search Gene Summary\">
+			<input type=\"submit\" name=\"submit\" value=\"Search Experimental\">
+			</td>
+         </tr>	
+	</table>  </font> </form>        
+	 
+	";
+	
+	return $content;
+}
+function search_array_experiment() {
+
+	$content='<br>';
+	$content= $content."
+	<form enctype=\"multipart/form-data\" name=aForm action='?q=ecoarray/experiment' method=POST>
+	<input type=\"hidden\" name=\"numofresults\" value=20>		
+	<font face=\"Arial, Helvetica, Verdana, sans-serif\" size=2>
+	<table align=left cellpadding=\"5\"  frame=\"box\" bgcolor=\"#eeeee\">
+       <tr> <td><font size=2><b>Author: </b></font></td>
+			<td><input type=text size=50 maxlength=500 name=author value=></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>Experiment Type:</b></font></td>
+			<td>
+				<select name=\"expType[]\" size=3 multiple=\"multiple\">
+      <option value=\"chemical\">Chemical</option>
+      <option value=\"growth\">Growth</option>
+      <option value=\"gene\">Gene</option>
+    </select>
+			</td>
+
+		</tr>
+		<tr>
+            <td><font size=2><b>Variable:</b></font></td>
+			<td><input type=text name=variable size=50 maxlength='100' value=''></td>
+		</tr>
+	   <tr>
+			<td colspan=2 align=center><input type=\"submit\" name=\"submit\" value=\"Search\" >	</td>
+         </tr>	
+	</table>  </font> </form>";
+	return $content;
+	
+}
+
+function search_array_paper() {
+	global $base_url;
+	drupal_goto($base_url.'?q=ecoarray/experiment');
+
+//	$content='<br>';
+//	$content= $content."
+//	<form enctype=\"multipart/form-data\" name=aForm action='?q=ecoarray/paper' method=POST>
+//	<input type=\"hidden\" name=\"numofresults\" value=20>		
+//	<font face=\"Arial, Helvetica, Verdana, sans-serif\" size=2>
+//	<table align=left cellpadding=\"5\"  frame=\"box\" bgcolor=\"#eeeee\">
+//       <tr> <td><font size=2><b>Author: </b></font></td>
+//			<td><input type=text size=50 maxlength=500 name=author value=></td>
+//		</tr>
+//		<tr>
+//            <td><font size=2><b>Pubmed ID:</b></font></td>
+//			<td><input type=text name=pubmed_id size=50 maxlength='100' value=''></td>
+//		</tr>
+//		<tr>
+//            <td><font size=2><b>Key Word:</b></font></td>
+//			<td><input type=text name=key_word size=50 maxlength='100' value=''></td>
+//		</tr>
+//	   <tr>
+//			<td colspan=2 align=center><input type=\"submit\" name=\"submit\" value=\"Search\" >	
+//		<input type=\"submit\" name=\"submit_all\" value=\"Show All\" >	</td>
+//         </tr>	
+//	</table>  </font> </form>";
+//	return $content;
+}
+
+
+
+
+

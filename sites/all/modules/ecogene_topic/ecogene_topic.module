@@ -1,0 +1,519 @@
+<?php
+// $Id: page_example.module,v 1.13 2007/10/17 19:38:36 litwol Exp $
+
+/**
+ * @file
+ * This is an example outlining how a module can be used to display a
+ * custom page at a given URL.
+ */
+
+/**
+ * Implementation of hook_help().
+ *
+ * Throughout Drupal, hook_help() is used to display help text at the top of
+ * pages. Some other parts of Drupal pages get explanatory text from these hooks
+ * as well. We use it here to illustrate how to add help text to the pages your
+ * module defines.
+ */
+function ecogene_topic_help($path, $arg) {
+  switch ($path) {
+//    case 'foo':
+      // Here is some help text for a custom page.
+//  return t('This sentence contains all the letters in the English alphabet.');
+  }
+}
+
+function ecogene_topic_init()
+{
+	 	drupal_add_css(drupal_get_path('module', 'ecogene_download') . '/ecogene_topic.css');
+		drupal_add_js(drupal_get_path('module', 'ecogene_topic') . '/ecogene_topic.js');
+		drupal_add_css(drupal_get_path('module', 'ecogene_gene') . '/genepage.css');
+		drupal_add_js(drupal_get_path('module', 'ecogene_gene') . '/genepage.js');
+}
+
+function ecogene_topic_menu() {
+
+  $items['topic'] = array(
+    'description' => 'Gene topic',
+    'page callback' => 'ecogene_topic_all_content',
+    'title' => 'EcoGene Topics',
+  	'file' => 'ecogene_topic.pages.inc',
+    'access arguments' => array('access content')
+  );
+  $items['topic/topics'] = array(
+    'description' => 'Gene topic',
+    'page callback' => 'ecogene_topic_all_content',
+    'title' => 'EcoGene Topics',
+  	'file' => 'ecogene_topic.pages.inc',
+    'access arguments' => array('access content')
+  );
+  $items['topic/genequery'] = array(
+    'description' => 'Topic Gene Set Query',
+    'page callback' => 'ecogene_topic_gene_query',
+    'title' => 'Topic Gene Query',
+  	'file' => 'ecogene_topic.pages.inc',
+    'access arguments' => array('access content')
+  );
+//  $items['topic/array_topic_gene_query'] = array(
+//    'description' => 'Topic and/or EcoArray Gene Set Query',
+//    'page callback' => 'array_topic_gene_query',
+//    'title' => 'EcoArray & Topic Gene Query',
+//  	'file' => 'ecogene_topic.pages.inc',
+//    'access arguments' => array('access content')
+//  );
+   $items['topic/genequery/venndiagram'] = array(
+    'description' => 'Gene Set Query',
+    'page callback' => 'array_topic_gene_venndiagram',
+    'title' => 'Gene Set Venn Diagram',
+  	'file' => 'ecogene_topic.pages.inc',
+    'access arguments' => array('access content'),
+   	'type' => MENU_DEFAULT_LOCAL_TASK,
+  );  	
+  $items['topic/%'] = array(
+    'description' => 'Topic of EcoGene',
+    'title callback' => 'ecogene_topic_title',    
+    'title arguments' => array(1),
+    'page callback' => 'ecogene_topic_content',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_topic.pages.inc',
+   
+  );
+    $items['topic/%/'] = array(
+    'title' => 'Topic Info',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    
+  );
+  
+    $items['topic/%/reference'] = array(
+    'title' => 'Reference',
+    'page callback' => 'ecogene_topic_reference',
+    'page arguments' => array(1,2),
+    'access arguments' => array('access content'),
+	'file' => 'ecogene_topic.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    );
+     $items['topic/%/review'] = array(
+    'title' => 'Review',
+    'page callback' => 'ecogene_topic_reference',
+    'page arguments' => array(1,2),
+    'file' => 'ecogene_topic.pages.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+function ecogene_topic_title($topic_id) {
+    if (!is_numeric($topic_id)) {
+//		 We will just show a standard "access denied" page in this case.
+		return drupal_access_denied();
+	}
+
+	db_set_active("ecogene");
+	
+	$args = array();
+	$args['topic_id'] = $topic_id;
+	
+	$result = db_query(
+		"SELECT topic_name FROM {t_topic} WHERE topic_id=:topic_id", $args);
+	
+	$record = $result->fetchAssoc();
+	$title = $record['topic_name'];
+	db_set_active("default");
+  	return $title;	
+}
+/**
+ * Implements hook_block_info().
+ */
+function ecogene_topic_block_info() {
+
+  $blocks['super_topic'] = array(
+  			'info' => t('ecogene_topic block #1 shows Super Topic')
+  );
+  $blocks['sub_topic'] = array(
+  			'info' => t('ecogene_topic block #2 shows Sub Topic')
+  );
+  $blocks['topic_gene'] = array(
+  			'info' => t('ecogene_topic block #3 shows Gene')
+  );
+//  $blocks['topic_search'] = array(
+//  			'info' => t('ecogene_topic block #4 search topics'),
+//  			'BLOCK_VISIBILITY_LISTED' => t('topic'),
+//  			'BLOCK_VISIBILITY_LISTED' => t('topic')
+//  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ecogene_topic_block_view($delta = '') {
+  
+  $topic_id = arg(1);	
+  if(!is_numeric($topic_id))	return ;
+  
+  switch ($delta) {
+     case 'super_topic':
+      	$content = ecogene_topic_display_block_super($topic_id,$total);
+        $block = array('subject' => t('Supertopic ('.$total.')'),
+          'content' => $content);
+        break;
+      case 'sub_topic':
+      	
+		
+      	$content = ecogene_topic_display_block_sub($topic_id,$total);
+        $block = array(
+        	'subject' => t('Subtopic ('.$total.')'),
+          	'content' =>$content);
+      	
+        break;
+      case 'topic_gene':
+      	$content = ecogene_topic_display_block_gene($topic_id,$total);
+        $block = array('subject' => t('Topic genes ('.$total.')'),
+          'content' => $content);
+        break; 
+//      case 'topic_search':
+//      	$content = ecogene_topic_search();
+//        $block = array('content' => $content,
+//        				'title' => 'ecogene-topic-search_topic_block');
+//        break;   
+  }
+  return $block;
+}
+function ecogene_topic_gene_query_form_submit($form, &$form_state)
+{
+	unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+     unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+	
+  	
+	$redirect = array('topic/genequery',array('query'=>$query));
+	$form_state['redirect'] = $redirect;
+}
+
+
+function ecogene_topic_search_form_submit($form, &$form_state)
+{
+//	$form_state['redirect'] = 'ecoarray/experiment';
+//	drupal_form_submit('ecoarray_experiment_form',$form_state);
+    unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+     unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+//	search_paper_return($form_state);
+//	$query['authors'] =  $form_state['values']['authors'];
+//	$query['item_per_page'] =  $form_state['values']['item_per_page'];
+//	$query['exp_types'] =  $form_state['values']['exp_types'];
+//	$query['variables'] =  $form_state['values']['variables'];
+//	
+	$redirect = array('topic/topics',array('query'=>$query));
+	$form_state['redirect'] = $redirect;
+	
+//	return $redirect;
+}
+
+function ecogene_topic_search()
+{
+	return drupal_get_form('ecogene_topic_search_form');
+}
+
+function ecogene_topic_search_form($form_state) {
+	
+	
+	$item_per_page = isset($_REQUEST['item_per_page'])? $_REQUEST['item_per_page']: 20;
+	$topictext = isset($_REQUEST['topictext'])? $_REQUEST['topictext']: '';
+	$topicradios = isset($_REQUEST['topicradios'])? $_REQUEST['topicradios']: 'title';
+	$topicids = isset($_REQUEST['topicids'])? $_REQUEST['topicids']: '';
+	
+  	$form = array();
+//  	$form['#attached']['css'] = array(
+//		drupal_get_path('module', 'ajax_example') . '/ajax_example.css',
+//	);
+
+  	$form['filter'] = array(
+    	'#type' => 'fieldset',
+    	'#title' => t('Search'),
+    	'#collapsible' => TRUE,
+    	'#collapsed' => FALSE,
+  	);
+  	$form['filter']['topictext'] = array(
+  		'#type' => 'textfield',
+  		'#default_value' => $topictext,
+  		'#description' => t('Search text'),
+  		'#size' => 30,
+  		
+	);
+  	$form['filter']['topicids'] = array(
+  		'#type' => 'textfield',
+  		'#default_value' => $topicids,
+  		'#description' => t('Topic IDs (separated by space or coma)'),
+  		'#size' => 30,
+  	
+  		
+	);  	
+	$form['filter']['topicradios'] = array(
+  		'#type' => 'radios',
+//  		'#title' => t('Search Field'),
+		'#default_value' => $topicradios,
+		'#attribute' => array('id'=>'radios'),
+  		'#options' => array('title'=>t('Title Only'), 'alltext'=>t('All Text')),
+	);
+	
+  
+ 
+ 	$form['filter']['item_per_page'] = array(
+  		'#type' => 'select',
+  		'#default_value' => $item_per_page,
+ 		'#options' => array(
+			'10' => t('10'),
+    		'20' => t('20'),
+    		'50' => t('50'),
+    		'all' => t('Show all'),
+  			),
+  		
+//  		'#suffix' => '<p> <i>per page</i></p>',
+		'#description' => 'results per page',
+  		'#attributes' => array('OnChange' => "this.form.submit()",
+  	)	
+  	);
+  	
+	$form['filter']['submit'] = array(
+			'#title' => 'search',
+			'#type' => 'submit', '#value' => t('Search')
+	);
+ 
+  return $form;
+}
+
+function ecogene_topic_gene_query_form($form_state) {
+	
+	
+	$item_per_page = isset($_REQUEST['item_per_page'])? $_REQUEST['item_per_page']: 20;
+	$topictext = isset($_REQUEST['topictext'])? $_REQUEST['topictext']: '';
+	$topicradios = isset($_REQUEST['topicradios'])? $_REQUEST['topicradios']: 'title';
+	$topicids = isset($_REQUEST['topicids'])? $_REQUEST['topicids']: '';
+	
+	
+	
+  	$form = array();
+//  	$form['#attached']['css'] = array(
+//		drupal_get_path('module', 'ajax_example') . '/ajax_example.css',
+//	);
+
+  	
+  	if(isset($_REQUEST['topic_ids']))	
+  	{
+  		
+		$form['topic_ids'] = 
+		array(	'#type' => 'hidden', 
+				'#value' => $_REQUEST['topic_ids']
+		);
+  	}
+
+	if(isset($_REQUEST['array_exp_ids']))	
+  	{
+  		
+		$form['array_exp_ids'] = 
+		array(	'#type' => 'hidden', 
+				'#value' => $_REQUEST['array_exp_ids']
+		);
+  	}
+
+  	$form['filter'] = array(
+    	'#type' => 'fieldset',
+    	'#title' => t('Search Topic'),
+    	'#collapsible' => TRUE,
+    	'#collapsed' => FALSE,
+  	);
+  
+  	
+  
+  		
+  	$form['filter']['topicids'] = array(
+  		'#type' => 'textfield',
+  		'#default_value' => $topicids,
+  		'#description' => t('Topic IDs (separated by space or coma)'),
+  		'#size' => 30,
+  	
+  		
+	);
+  	$form['filter']['topictext'] = array(
+  		'#type' => 'textfield',
+  		'#default_value' => $topictext,
+  		'#description' => t('Search text'),
+  		'#size' => 30,
+  		
+	);
+	$form['filter']['topicradios'] = array(
+  		'#type' => 'radios',
+//  		'#title' => t('Search Field'),
+		'#default_value' => $topicradios,
+		'#attribute' => array('id'=>'radios'),
+  		'#options' => array('title'=>t('Title Only'), 'alltext'=>t('All Text')),
+	);
+	
+  
+ 
+ 	$form['filter']['item_per_page'] = array(
+  		'#type' => 'select',
+  		'#default_value' => $item_per_page,
+ 		'#options' => array(
+			'10' => t('10'),
+    		'20' => t('20'),
+    		'50' => t('50'),
+    		'all' => t('Show all'),
+  			),
+  		
+//  		'#suffix' => '<p> <i>per page</i></p>',
+		'#description' => 'results per page',
+  		'#attributes' => array('OnChange' => "this.form.submit()",
+  	)	
+  	);
+  	
+	$form['filter']['submit'] = array(
+			'#title' => 'search',
+			'#type' => 'submit', '#value' => t('Search')
+	);
+ 
+  return $form;
+}
+function ecogene_topic_display_block_super($topic_id,&$total)
+{
+	global $base_url;
+		$content = '';
+		db_set_active($name = 'ecogene');
+		$args = array(':topic_id'=>$topic_id);
+		$query = db_query("SELECT COUNT(t_topic.topic_id) as total from t_topic_topic_link left join t_topic on t_topic_topic_link.linked_topic_id=t_topic.topic_id ".
+                          " where t_topic_topic_link.topic_id =:topic_id ", $args);	
+	
+		if($row = $query->fetchAssoc())
+		$total = $row['total'];
+		unset($row);
+		
+  		$query_1 = "select t_topic.topic_id as topic_id, t_topic.topic_name as name ".
+                          " from t_topic_topic_link left join t_topic on t_topic_topic_link.linked_topic_id=t_topic.topic_id ".
+                          " where t_topic_topic_link.topic_id = :topic_id";
+  		
+  		$query = db_query($query_1,$args);
+  		$items = array();
+  		While ($row = $query->fetchAssoc()) {
+  			$items[]=array('data'=>'<a href="'.$base_url.'/?q=topic/'.$row['topic_id'].'">'. $row['name'].'</a>'); 			
+  			
+  		}
+		
+		if($items)
+		{   
+			$variables = array('items'=>$items, 'title'=>'', 'type'=>'ul', 'attributes' => array('class'=>'menu'));
+  			$content .= theme_item_list($variables);
+		}
+  		db_set_active($name = 'default');
+  		return $content;
+}
+function ecogene_topic_display_block_sub($topic_id,&$total)
+{
+	global $base_url;
+	$args = array(':topic_id'=>$topic_id);
+	$content = '';
+		db_set_active($name = 'ecogene');
+		
+		$query = db_select('t_topic_topic_link','tt');
+		
+		$query -> leftJoin('t_topic', 't_topic', 't_topic.topic_id = tt.topic_id'); 
+		$query->condition('tt.linked_topic_id', $topic_id);
+   		$query->fields('t_topic');
+		$records = $query->execute()->fetchAll();
+		$total = count($records);
+  		$items = array();
+  		foreach ($records as $row)
+  		{
+  		  			
+  			$items[]=array('data'=>'<a href="'.$base_url.'/?q=topic/'.$row->topic_id.'">'. $row->topic_name.'</a>'); 			
+  			
+  		}
+
+  		if($items)
+  		{
+  			$variables = array('items'=>$items, 'title'=>'', 'type'=>'ul', 'attributes' => array('class'=>'menu'));
+  			$content .= theme_item_list($variables);
+  		}
+  		db_set_active('default');
+  		return $content;
+}
+function ecogene_topic_display_block_gene($topic_id,&$total)
+{
+	global $base_url;
+	$args = array(':topic_id'=>$topic_id);
+	$content = '';
+		db_set_active('ecogene');
+		$query = db_query("SELECT COUNT(t_gene.eg_id) as total from t_topic_gene_link left join t_gene on t_topic_gene_link.eg_id=t_gene.eg_id 
+                          where t_topic_gene_link.topic_id= :topic_id ",$args);	
+	
+		if($row = $query->fetchAssoc())
+		$total = $row['total'];
+		unset($row);
+		
+  		$query_1 = "select t_gene.name as name, t_gene.eg_id as eg_id  from t_topic_gene_link left join t_gene on t_topic_gene_link.eg_id=t_gene.eg_id 
+                          where t_topic_gene_link.topic_id = :topic_id order by name";
+  		
+  		$query = db_query($query_1,$args);
+  		$n=0;
+  		$items = array();
+  		While ($row = $query->fetchAssoc()) {
+  			$items[]='<a href="'.$base_url.'/?q=gene/'.$row['eg_id'].'">'. $row['name'].'</a>'; 		
+  			$n = $n + 1;
+  			if($n>20) 
+  			{	
+ // 				$items[]='<a href="'.$base_url.'/?q=ecosearch/gene/search&search_topic='.$topic_id.'">See all...</a>'; 
+  				break;
+  			}	
+  			
+  		}
+ 		if($items)
+		{
+                     $items[]='<a href="'.$base_url.'/?q=ecosearch/gene/search&search_topic='.$topic_id.'">See all...</a>'; 
+  			$variables = array('items'=>$items, 'title'=>'', 'type'=>'ul', 'attributes' => array('class'=>'menu'));
+  			$content .= theme_item_list($variables);
+  		}
+  		
+  		db_set_active('default');
+  		return $content;
+}
+function ecogene_topic_main()
+{
+	global $base_url;
+	drupal_goto($base_url.'?q=topic/topics');
+}

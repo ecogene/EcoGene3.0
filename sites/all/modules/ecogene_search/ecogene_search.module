@@ -1,0 +1,369 @@
+<?php
+
+function ecogene_search_menu() {
+  $items['ecosearch'] = array(
+    'title' => 'EcoSearch',        
+    'page callback' => 'search_gene',
+    'access arguments' => array('access content'),
+    
+  );
+  $items['ecosearch/gene'] = array(
+    'title' => 'Search Gene',
+  	'page callback' => 'search_gene',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    
+  );
+//  $items['ecosearch/topic'] = array(
+//    'title' => 'Search Topic',        
+//    'page callback' => 'search_topic',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_LOCAL_TASK,
+//  );
+//  $items['ecosearch/topic/search'] = array(
+////    'title' => 'Topic Search Results',        
+//    'page callback' => 'search_topic_return',
+//    'access arguments' => array('access content'),
+//    'file' => 'ecogene_search.pages.inc',
+//    
+//  );
+  $items['ecosearch/gene/search'] = array(
+    'page callback' => 'search_gene_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_search.pages.inc',
+    
+  );
+  $items['ecosearch/reference/search'] = array(
+//    'title' => 'Reference Search Results',        
+    'page callback' => 'search_reference_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_search.pages.inc',
+    
+  );
+    $items['ecosearch/reference'] = array(
+    'title' => 'Search Reference',        
+    'page callback' => 'search_reference',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+function search_gene() {
+
+	$content='<br>';
+	$content= $content."
+	<form enctype=\"multipart/form-data\" name=aForm action='".$GLOBALS['base_url']."/ecosearch/gene/search' method=POST>
+	<input type=\"hidden\" name=\"item_per_page\" value=\"10\">	
+	
+	<font face=\"Arial, Helvetica, Verdana, sans-serif\" size=2>
+	<table align=left cellpadding=\"5\"  frame=\"box\" bgcolor=\"#eeeee\">
+       <tr> <td><font size=2><b>Gene Name(s):</b></font></td>
+			<td><input type=text name=name size=13 value=''><input type=checkbox name=synonyms CHECKED>	Include Synonyms</td>
+		</tr>
+		<tr> <td><font size=2><b>Protein Name(s):</b></font></td>
+			<td><input type=\"text\" name=\"prot_name\" size=\"50\" value=\"\"></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>EG ID:</b></font></td>
+			<td><input type=text name=egid size=15 value=''></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>ECK ID:</b></font></td>
+			<td><input type=text name=eckid size=15 value=''></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>External DB ID:</b></font></td>
+			<td><input type=text name=accessionId size=15 value=''></td>
+		</tr>
+		<tr>
+			 <td><font size=2><b>Product Type:</b></font>			</td>
+			<td><select name=type>
+                  <option value=''>&nbsp;&nbsp;&nbsp;Any&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                    <option value='aa'>&nbsp;&nbsp;&nbsp;Protein&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                    <option value='dna'>&nbsp&nbsp;&nbsp;DNA&nbsp;&nbsp;&nbsp;&nbsp; </option>
+                    <option value='nt'>&nbsp;&nbsp;&nbsp;RNA&nbsp;&nbsp;&nbsp;&nbsp; </option>
+                  </select>
+			 </td>
+		</tr>
+		<tr>
+			 <td><font size=2><b>Product Size:</b></font>			</td>
+			<td>
+				Minimum <input type=text name=p_minimum size=9 value=''>
+				Maximum <input type=text name=p_maximum size=9 value=''>
+				Measure &nbsp;&nbsp;
+							<select name=p_measure size=1>
+                                <option value='p_length' selected>Product Length</option>
+                                <option value='p_mw'>Molecular Weight</option>
+	             </select>                   
+			 </td>
+		</tr>
+		<tr>
+			 <td><font size=2><b>Gene Address:</b></font></td>
+			<td>
+				Left End &nbsp;<input type=text name=leftEnd size=9 value=''>
+				Right End <input type=text name=rightEnd size=9 value=''>
+				Orientation
+							 <select name=orientation onChange=\"settypee()\" size=1>
+                                <option value='' selected>Both</option>
+                                <option value='Clockwise'>Clockwise</option>
+                                <option value='Counterclockwise'>Counterclockwise</option>
+                              </select>                    
+			 </td>
+		</tr>
+		<tr>
+			<td><font size=2><b><span style=\"border-bottom: thin dotted; color: #0070B3;\" title =\"AND is the default logical operation. Check OR box if you like to change it to OR. Use the double quotes to group words.\">Gene Description: </span></b></font></td>
+			<td><input name=\"description\" type=\"text\" value=\"\" size=\"50\">
+				<input type=checkbox name=\"description_or\" unchecked>	OR </td>
+			</td>		</tr>
+		<tr>
+			 <td><font size='2'><b>Curator or User Comments: </b></font></td>
+			<td><input name=\"comments\" type=\"text\" value=\"\"  size=\"50\"></td>
+		</tr>
+		<tr>
+			<td><font size=2><b>Upload ID file: </b></font></td>
+          	<td><input name=\"userfile\" type=\"file\"></td>
+
+         </tr>
+		<tr><td></td>
+			<td><input type=\"reset\" name=\"reset\" value=\" Reset \"> 
+			<input type=\"submit\" name=\"submit\" value=\"Search Gene\">	</td>
+         </tr>	 
+        <tr>
+        	<td><font size=2><b><span style=\"border-bottom: thin dotted; color: #0070B3;\" title =\"Search genes by Gene Ontology (GO) accession (GO:0004565 for example). \">Gene Ontology (GO) Accession: </span></b></font></td>
+			<td><input name=\"go\" type=\"text\" value=\"\" size=\"20\">
+        	<input type=\"submit\" name=\"submit\" value=\"Search Go\">	</td></td>
+        </tr> 
+	</table>  </font>  </form>      
+	 
+	";
+	
+	return $content;
+}
+function search_reference() {
+
+	$content='<br>';
+	$content= $content."
+	<form enctype=\"multipart/form-data\" name=aForm action='?q=ecosearch/reference/search' method=POST>
+	<input type=\"hidden\" name=\"item_per_page\" value=10>		
+	<font face=\"Arial, Helvetica, Verdana, sans-serif\" size=2>
+	<table align=left cellpadding=\"5\"  frame=\"box\" bgcolor=\"#eeeee\">
+       <tr> <td><font size=2><b>Title: </b></font></td>
+			<td><input type=text size=35 maxlength=500 name=title value=></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>Author Name(s):</b></font> </td>
+			<td><input type=text name=initials size=25 maxlength='100' value=''> </td>
+		</tr>
+		<tr>
+            <td><font size=2><b>Abstract: </b></font></td>
+			<td><textarea cols=50 rows=2 name=abstract ></textarea></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>Journal: </b></font></td>
+			<td><input type=text size=40 maxlength=500 name=journal value=''></td>
+		</tr>
+		<tr>
+			 <td><font size=2><b>Year:</b></font>			</td>
+			<td> From <input type=text name=fromYear size=12 value=''>
+				 To <input type=text name=toYear size=12  value=''>
+			 </td>
+		</tr>
+		<tr>
+			 <td><font size=2><b>Reference ID Number:</b></font>			</td>
+			<td>
+				<input type=text size=22 maxlength=500 name=pubmedId value=''>
+				ID Type: 
+                <select name=\"idtype\">
+                  <option value=\"pubmed\" selected>Pubmed</option>
+                  <option value=\"medline\">Medline</option>
+
+                </select>
+			 </td>
+		</tr>
+		
+		<tr>
+			<td><font size=2><b>Upload ID file: </b></font></td>
+          	<td><input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"30000\">
+             <input name=\"userfile_ref\" type=\"file\"></td>
+
+         </tr>
+		<tr>
+		<td></td>
+			<td><input type=\"reset\" name=\"reset\" value=\" Reset \"> 
+				<input type=\"submit\" name=\"submit\" value=\"Search Reference\" >	</td>
+         </tr>	
+	</table> </font> </form>          
+	 
+	";
+
+	return $content;
+}
+
+function search_topic() {
+
+	$content='<br>';
+	$content= $content."
+	<form enctype=\"multipart/form-data\" name=aForm action='?q=ecosearch/topic/search' method=POST>
+	<input type=\"hidden\" name=\"numofresults\" value=20>		
+	<font face=\"Arial, Helvetica, Verdana, sans-serif\" size=2>
+	<table align=left cellpadding=\"5\"  frame=\"box\" bgcolor=\"#eeeee\">
+       <tr> <td><font size=2><b>Title: </b></font></td>
+			<td><input type=text size=35 maxlength=500 name=title value=></td>
+		</tr>
+		<tr>
+            <td><font size=2><b>All Text:</b></font></td>
+			<td><input type=text name=textall size=50 maxlength='100' value=''></td>
+		</tr>
+	   <tr>
+	   <td></td>
+			<td><input type=\"submit\" name=\"submit\" value=\"Search Topic\" >	<input type=\"submit\" name=\"submit_all\" value=\"Show All Topics\" >	</td>
+         </tr>	
+	</table>  </font> </form>";
+	return $content;
+}
+
+
+
+/**
+ * Implements hook_block_info().
+ */
+function ecogene_search_block_info() {
+ 
+  $blocks['search_ecogene'] = array(
+  			'info' => t('ecogene_search block Seach ecogene'),
+  			'region' =>'header',
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ecogene_search_block_view($delta = '') {
+  
+  switch ($delta) {
+     case 'search_ecogene':
+      	$content = ecogene_search_block_content();
+        $block = array('content' => $content,
+        				'id' => 'block-ecogene-search-form');
+        break;
+  
+  }
+  return $block;
+}
+function ecogene_search_search_form_submit($form, &$form_state)
+{
+
+	
+	
+		
+	unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+    unset($form_state['values']['submit']);
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+   
+	switch ($form_state['values']['search_type']) {
+		case 'gene':
+			$redirect = array('ecosearch/gene/search',array('query'=>$query));
+		break;
+//		case 'reference' :
+//			$redirect = array('ecosearch/reference/search',array('query'=>$query));
+//		break;
+//		case 'topic':
+//			$redirect = array('ecosearch/topic/search',array('query'=>$query));
+//		break;
+//		case 'ecoarray':
+//			$redirect = array('ecoarray/experiment',array('query'=>$query));
+//		break;	
+		default:
+			$redirect = array('ecosearch/gene/search',array('query'=>$query));
+		break;
+	}
+	
+
+	$form_state['redirect'] = $redirect;
+
+}
+
+function ecogene_search_block_content()
+{
+
+	$content = '<form id="ecogene-search-search-form" enctype="multipart/form-data" action="?q=ecosearch/gene/search" method="post">';
+	$content .= '<div>';
+	$content .=  '<div class="form-item form-type-textfield">
+ 					<input type="text" name="main_search" class="form-text" size="50" title="Enter the terms you wish to search">
+				</div>
+				
+					<input type="submit" class="form-submit" value="Search gene" name="op">
+					<input type="hidden" value="gene" name="search_type">
+					
+				';
+	$content .= '</div></form>';
+	return $content;
+//	return drupal_get_form('ecogene_search_search_form');
+}
+
+function ecogene_search_search_form($form, &$form_state) {
+	
+  	$form = array();
+//  	$form['#attached']['css'] = array(
+//		drupal_get_path('module', 'ajax_example') . '/ajax_example.css',
+//	);
+
+  	$form['#method'] = 'post';
+  	$form['main_search'] = array(
+    	'#type' => 'textfield',
+  		'#attributes' => array('title' => t('Enter the terms you wish to search')),
+//    	'#title' => t('Enter the terms you wish to search'),
+    	'#size' => 15,  
+  		'#maxlength' => 100, 	
+  	);
+  	$form['submit'] = array(
+		'#type' => 'submit',
+  	 	'#value' => t('Search gene'),
+//  		'#attributes' => array('class' => 'form-submit'),
+	);
+	
+  	$form['filter'] = array(
+    	'#type' => 'fieldset',
+    	'#title' => t('Refine your search'),
+    	'#collapsible' => TRUE,
+    	'#collapsed' => TRUE,
+  		'#access'=>FALSE,
+  	);
+  
+
+	$form['filter']['search_type'] = array(
+  		'#type' => 'radios',
+//  		'#title' => t('Search Field'),
+		'#default_value' => variable_get('search_type', 'gene'),
+  		'#options' => array('gene'=>t('Gene'), 
+  							'reference'=>t('Reference'),
+							'topic'=>t('Topic'),
+							'ecoarray'=>t('EcoArray')),
+	);
+
+  
+	
+  
+  return $form;
+}
+function ecogene_search_search_form_validate($form, &$form_state) {
+  
+  drupal_set_message('validation');
+//  form_set_error($form_state['values']['redirect'][0]);
+}

@@ -1,0 +1,264 @@
+@CHARSET "ISO-8859-1";
+/* $Id: node.css,v 1.18 2010/09/17 14:53:21 dries Exp $ */
+
+
+#gene_map,
+#igr_map,
+#sites_map, 
+#gene_comments{
+	width: 830px;
+	
+	visibility: visiable;
+	margin-left: 10px;
+	marign-right: 20px;
+	padding-bottom: 20px;
+	border-left:1px dotted #E5E5E5;
+	border-right:1px dotted #E5E5E5;
+	border-bottom:1px dotted #E5E5E5;
+
+	padding-left: 20px;
+	padding-right: 10px;
+	padding-bottom: 20px;
+	padding-top: 20px;
+		
+}
+#gene_comments p
+{
+	padding: 0.5em;
+	padding-left: 1.5em;	
+}
+#gene_map
+{
+	width: 860px;
+	padding-left: 0px;
+	padding-right: 0px;
+	
+	
+}
+#gene_map p{
+	float: left;
+	
+}	
+#igr_map img,
+#sites_map img
+{
+	padding-bottom: 10px;
+	
+}
+#gene_map form{
+	padding: 30px 0px 0px 0px;
+}
+
+#gene_info {
+	width: 780px;
+	font-size: 1em;
+	padding: 0px 40px;
+	margin-bottom: 20px;
+}
+h1.title{
+	font-size:0.5em;
+}
+#page-title {	
+/*	visibility: hidden; 
+*/
+font-size: 0.5em;
+}
+#g_name{
+	font-style: italic;
+	font-weight: bold;
+}
+#pseudo_tag{
+	
+	color:red;
+}
+#escherichia{
+	font-style: italic;
+}
+
+h1#gene_page_title{
+	text-align: center;
+	font-size: 1.5em;
+	margin: 0em 0em 1em;
+}
+
+#gene_info table {
+	width:100%;
+	align: center;    
+	border-collapse: collapse;
+	padding: 0px;
+	margin: 0px;
+
+}
+#gene_info table tbody{
+	
+	border: 1px solid #CCCCCC; 
+}
+
+#gene_info table tr{
+	background: none repeat scroll 0 0 rgba(255, 255, 255, 0.063)
+}
+
+#gene_info table td {
+	padding: 5px 5px;
+	border-bottom: 1px;
+	text-align: center;
+}
+pre#protein_seq{
+	font-size: 1em;
+	margin: 1.5em 10px;
+	background-color: #F7F7F7;
+}
+
+.gene_protein p{
+	
+ 	margin: 5px 5px;
+    padding-bottom: 0.5em;
+    padding: 0.5em;
+	background-color: #F7F7F7;
+	
+}
+div#prot_verified{
+	margin: 5px 5px;
+	padding: 0.5em;
+	background-color: #F7F7F7;
+}
+span.intergene
+{
+	cursor:pointer;
+	color: #0071B3;		
+}
+div#join,
+div#right_intergene, 
+div#left_intergene
+{
+	float:left;
+	position:absolute;
+	width: 150px;
+	z-index:999;
+	visibility: hidden;
+	background-color: #F9F9F9;
+	-moz-border-radius: 10px 10px 10px 10px;
+	border:1px solid #B9B9B9;
+	padding:15px 20px;
+	
+}
+div#join
+{
+	padding:20px 20px;
+	text-align: left;
+		width: 500px;
+}
+
+div#right_intergene p, 
+div#left_intergene p
+{
+	margin: 0 0 0.5em;
+	text: 1.2em;
+	color: #0071B3;
+	
+}
+
+
+.EG_CollapsibleMap_TitleDiv {
+    margin-bottom: 0px;
+    margin-top: 19px;
+    clear: both;
+    padding-left:0px;
+}
+.EG_CollapsibleMap_TitleDiv a:hover,
+.EG_CollapsibleMap_TitleDiv a:active,
+.EG_CollapsibleMap_TitleDiv a:focus
+{
+    color: #1364C4;
+    text-decoration: none;
+}
+.EG_CollapsibleMap_Title {
+   font-family: 'Segoe UI',Verdana,Arial;
+    font-weight: bold;
+    padding-left: 4px;
+    word-wrap: break-word;
+    font-size: 1em;
+}
+.EG_CollapsibleMap_HrDiv {
+    padding-top: 10px;
+}
+.EG_CollapsibleMap_Hr {
+    border-bottom: 1px solid #E5E5E5;
+    border-right: medium none;
+    border-top: medium none;
+    color: #E5E5E5;
+    margin-left: 4px;
+}
+.EG_CollapsibleMap_TitleAhref {
+    float: left;
+    outline: medium none;
+}
+a.EG_CollapsibleMap_TitleAhref {
+   padding-right: 1em;
+}
+.EG_CollapsibleMap_Img {
+    border-width: 0;
+    vertical-align: middle;
+}
+.cl_CollapsibleArea_expanding {
+    background: url("/3.0/sites/all/images/collapse_expand.png") no-repeat scroll -62px 0px ;
+    height: 16px;
+    overflow: hidden;
+    width: 17px;
+}
+.cl_CollapsibleArea_collapsing {
+    background: url("/3.0/sites/all/images/collapse_expand.png") no-repeat scroll -42px 0px ;
+    height: 16px;
+    overflow: hidden;
+    width: 17px;
+}
+
+#ref_year_list p
+{
+	padding : 1em;
+}
+#ref_year_list a
+{
+	display: inline-block;
+    line-height: 1.2em;
+    width: 50px;
+}
+
+a.go_term_info {
+  text-decoration: none;
+}
+
+a.go_term_info:hover {
+  color: red;
+  position: relative;
+ 
+}
+
+a.go_term_info span {
+    display: none
+}
+a.go_term_info:hover span {
+	color: maroon;
+    border: #c0c0c0 1px dotted;
+    padding: 5px 20px 5px 5px;
+    display: block;
+    left: 0px;
+    margin: 10px;
+    width: 250px;
+    position: absolute;
+    top: 10px;
+    text-decoration: none;
+	
+	z-index: 20px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -moz-box-shadow: 0px 0px 2px #999;
+  -webkit-box-shadow: 0px 0px 2px #999;
+  box-shadow: 0px 0px 2px #999;
+  background-image: -moz-linear-gradient(top, #ffffff, #dddddd);
+  background-image: -webkit-linear-gradient(top, #ffffff, #dddddd);
+  background-image: -moz-linear-gradient(top, #ffffff, #dddddd);
+  background-image: -ms-linear-gradient(top, #ffffff, #dddddd);
+  background-image: -o-linear-gradient(top, #ffffff, #dddddd);
+}

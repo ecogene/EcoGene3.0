@@ -1,0 +1,614 @@
+<?php
+
+// $Id: page_example.module,v 1.13 2007/10/17 19:38:36 litwol Exp $
+
+/**
+ * @file
+ * This is an example outlining how a module can be used to display a
+ * custom page at a given URL.
+ */
+
+/**
+ * Implementation of hook_help().
+ *
+ * Throughout Drupal, hook_help() is used to display help text at the top of
+ * pages. Some other parts of Drupal pages get explanatory text from these hooks
+ * as well. We use it here to illustrate how to add help text to the pages your
+ * module defines.
+ */
+function ecogene_gene_help($path, $arg) {
+  switch ($path) {
+//    case 'foo':
+      // Here is some help text for a custom page.
+//      return t('This sentence contains all the letters in the English alphabet.');
+  }
+}
+function ecogene_gene_permission() {
+  return array(
+    'administer' => array(
+      'title' => t('Administer'),
+    ),
+    'anonymous' => array(
+      'title' => t('Anonymous'),
+    ),
+    'restricted' => array(
+      'title' => t('Restricted User'),
+    ),
+  );
+}
+
+
+function ecogene_gene_menu() {
+
+
+  $items['gene/%'] = array(
+    'description' => 'Topic of EcoGene',
+    'title callback' => 'ecogene_gene_title',    
+    'title arguments' => array(1),
+    'page callback' => 'ecogene_gene_content',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_gene.pages.inc',
+//    'type' => MENU_CALLBACK,
+  );
+  $items['gene/%/'] = array(
+    'title' => 'GenePage',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    
+  );
+    $items['gene/%/reference'] = array(
+    'title' => 'Reference',
+    'page callback' => 'ecogene_gene_reference',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+	'file' => 'ecogene_gene.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+    );
+//     $items['gene/%/review'] = array(
+//    'title' => 'Review',
+//    'page callback' => 'ecogene_gene_reference',
+//    'page arguments' => array(1,2),
+//    'file' => 'ecogene_gene.pages.inc',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_LOCAL_TASK,
+//  );
+    $items['gene/%/dnasequence'] = array(
+    'title' => 'DNA',
+    'page callback' => 'ecogene_gene_dnasequence',
+    'page arguments' => array(1),
+    'file' => 'ecogene_gene.sequence.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+   
+  $items['verified_set'] = array(
+    'page callback' => 'verified_set',
+    'page arguments' => array(1),
+    'file' => 'ecogene_gene.protein.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+ 
+  	$items['gene/%/structure'] = array(
+    'title' => 'Structure',
+    'page callback' => 'ecogene_gene_structure',
+    'page arguments' => array(1,2),
+    'file' => 'ecogene_gene.protein.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+   $items['gene/%/array'] = array(
+    'title' => 'EcoArray',
+    'page callback' => 'ecogene_gene_array',
+    'page arguments' => array(1),
+    'file' => 'ecogene_gene.array.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+     $items['gene/%/askakeio'] = array(
+ //   'title' => 'ASKA/KEIO',
+    'title callback' => 'askakeio_title',
+    'title arguments' =>array(1),
+    'page callback' => 'ecogene_gene_askakeio',
+    'page arguments' => array(1),
+    'file' => 'ecogene_gene.pages.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+     'weight' => 11,
+  );
+  
+//  	$items['gene/%/protein'] = array(
+//    'title' => 'Protein',
+//    'page callback' => 'ecogene_gene_protein',
+//    'page arguments' => array(1),
+//    'file' => 'ecogene_gene.protein.inc',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_LOCAL_TASK,
+//  );
+//   $items['gene/%/rna'] = array(
+//    'title' => 'RNA',
+//    'page callback' => 'ecogene_gene_rna',
+//    'page arguments' => array(1),
+//    'file' => 'ecogene_gene.protein.inc',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_LOCAL_TASK,
+//  );
+  
+  $items['gene/%/proteinrna'] = array(
+    'description' => 'Protein or RNA',
+    'title callback' => 'ecogene_gene_protein_rna_title',    
+    'title arguments' => array(1),
+    'title' => 'RNA',
+    'page callback' => 'ecogene_gene_protein_rna',
+    'page arguments' => array(1),
+    'file' => 'ecogene_gene.protein.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
+  
+  return $items;
+}
+
+function ecogene_gene_protein_rna_title($eg_id) {
+
+	db_set_active("ecogene");
+
+	$args = array();
+	$args['eg_id'] = $eg_id;
+	
+	$result = db_query("SELECT type FROM {t_gene} WHERE eg_id=:eg_id", $args);	
+	$record = $result->fetchAssoc();
+
+	$title = $record['type'] == "aa" ? "Protein" : "RNA";
+
+	db_set_active("default");
+  	return $title;	
+}
+
+
+function ecogene_gene_title($eg_id) {
+
+	db_set_active("ecogene");
+
+	$args = array();
+	$args['eg_id'] = $eg_id;
+	
+	$result = db_query("SELECT name FROM {t_gene} WHERE eg_id=:eg_id", $args);	
+	$record = $result->fetchAssoc();
+		$title = $record['name'];
+
+	db_set_active("default");
+  	return $title;	
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ecogene_gene_block_info() {
+
+  $blocks['gene_topic'] = array('info' => t('ecogene_gene block #1 shows Topic'));
+  $blocks['resource'] = array('info' => t('ecogene_gene block #2 shows Resources'));
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ecogene_gene_block_view($delta = '') {
+  
+  $eg_id = arg(1);	
+  switch ($delta) {
+    case 'gene_topic':
+    	$content = ecogene_gene_display_block_topic($eg_id,$total);
+      	$block['subject'] = t('Gene topic ('.$total.')');
+      	$block['content'] = $content;
+      	break;
+
+    case 'resource':
+      $content = ecogene_gene_display_block_resource($eg_id);
+      $block['subject'] = t('Resources');
+      $block['content'] = $content;
+      break;
+  }
+  return $block;
+}
+
+
+function ecogene_gene_display_block_topic($eg_id,&$total)
+{
+	global $base_url;
+		$content = '';
+		db_set_active('ecogene');
+		
+		$query = db_query("SELECT COUNT(t_topic.topic_id) as total from t_topic, t_topic_gene_link ".
+                          " where t_topic_gene_link.topic_id=t_topic.topic_id and t_topic_gene_link.eg_id = :eg_id ",array('eg_id'=>$eg_id));	
+	
+  		
+		if($row = $query->fetchAssoc())
+		$total = $row['total'];
+		unset($row);
+		
+  		$query_1 = "select tpc_gene.topic_id, tpc_gene.eg_id, t.topic_title as name from t_topic t, t_topic_gene_link tpc_gene where tpc_gene.eg_id = :eg_id and tpc_gene.topic_id=t.topic_id order by t.topic_title";
+  		
+  		$query = db_query($query_1, array('eg_id'=>$eg_id));
+  		
+  		While ($row = $query->fetchAssoc()) {
+//  			$items[]=array('data'=>'<a href=\''.$base_url.'?q=topic/'.$row['topic_id'].'\'>'.$row['name'].'</a>'); 			
+  			$topics[$row['topic_id']] =  array( 'topic_name' => $row['name'] ) ;
+  		}
+  		$topic_hierarchy = construct_topic_hierarchy($topics);
+
+  		foreach ($topic_hierarchy as $value) {
+  			$children = array();
+  			if(!empty($value['super_topics'])){
+  				$max_weight = 0;
+  				foreach ($value['super_topics'] as $v) {
+  					if($v['weight']>$max_weight) $max_weight = $v['weight'];  					
+  				}
+  				for ($i = 0; $i <= $max_weight; $i++) {
+  					foreach ($value['super_topics'] as $v) {
+  						if ($v['weight']==$i){
+  							$children[] =  array( 'data' => '<a href=\''.$base_url.'?q=topic/'.$v['topic_id'].'\'>'.$v['topic_name'].'</a>',
+  										 'class' => array('dummy'=>'leaf', 'level-2'));
+  						}
+  					}
+  				}
+  				  				
+  			}
+  			  		  			
+  			$class_item = (empty($children))? array('dummy'=>'leaf', 'level-1') : array('dummy'=>'expanded','level-1');
+  			$items[] = array(
+    			'data' => '<a href=\''.$base_url.'?q=topic/'.$value['topic_id'].'\'>'.$value['topic_name'].'</a>',
+    			'class' => $class_item,
+    			'children' => $children,
+  			);
+  		}
+  		
+  		
+  db_set_active($name = 'default');
+  $content = $content.theme_item_list(array('items'=>$items,'title'=>'', 'type'=>'ul', 'attributes' => array('class'=>'menu')));
+  		
+  return $content;
+}
+function construct_topic_hierarchy($topics)
+{
+	foreach ($topics as $ind => $value) {
+		$topics[$ind]['super_topics']= topic_super_topics($ind);
+	}
+	
+	foreach ($topics as $ind=>$s) {
+		$topic_id = $ind;
+		$topics[$ind]['weight'] = 0;
+		foreach ($topics as $ind2 => $value){
+			if($ind2 == $topic_id) continue;
+			if( in_array($topic_id, $value['super_topics']) ){
+				$topics[$ind]['weight'] += 1;
+			}
+		}
+	}
+	
+	$hierarchy = array();
+	foreach ($topics as $ind=>$value) {
+		if($value['weight']==0){
+			$hierarchy[]= array ('topic_id' => $ind,
+								'topic_name' => $value['topic_name'],
+								'super_ids' => array()
+								);
+		}
+	}
+	foreach ($topics as $ind=>$value) {
+		if($value['weight']!=0){
+			foreach ($hierarchy as $ind2 => $value2) {
+				if(in_array($ind, $topics[$value2['topic_id']]['super_topics'])){
+						$hierarchy[$ind2]['super_topics'][] = array('topic_id'=>$ind, 'topic_name' => $value['topic_name'], 'weight' => $value['weight']);
+						
+				}
+				 
+			}			
+		}
+	}
+	
+	
+	return $hierarchy;
+}
+function topic_super_topics($topic_id)
+{
+	$stack = array();     // stack for ancestors ids
+	$ancestor_acc = array(); // all ancestors go accession number, e.g. go num
+	
+	array_push($stack,$topic_id);
+	db_set_active("ecogene");
+	while(!empty($stack)) {
+		
+		$id = array_shift($stack);		
+		
+		$result = db_query("SELECT linked_topic_id 
+					FROM t_topic_topic_link  
+					WHERE topic_id=:topic_id",array(':topic_id'=>$id));	
+			
+		
+		
+		
+		if(!$result){
+		
+			continue;
+			 
+		}else{
+			
+			
+//			
+			while ($row=$result->fetchAssoc()) {
+								
+				$parent_id = $row['linked_topic_id'];
+				array_push($stack,$parent_id);
+				
+//				var_dump($stack);
+					array_push($ancestor_acc,$parent_id);
+					$ancestor_acc = array_unique($ancestor_acc);
+				
+				
+//				var_dump($ancestor_acc);
+			}			
+		}
+	}
+	
+	return $ancestor_acc;
+	
+	
+}
+function ecogene_gene_display_block_resource($eg_id)
+{	
+		global $base_url;
+	    db_set_active('ecogene');
+	    $query = db_query("SELECT * from t_gene where eg_id=:eg_id", array(':eg_id'=>$eg_id));
+	    
+	    $row = $query->fetchAssoc();
+	    
+		if($row)
+		{
+			$gene_name = $row['name'];
+			$eck_id = $row['eck_id'];
+		}
+		unset($row);
+		
+		
+    	$query = db_query("SELECT * FROM t_biodatabase Where display = 0 and biodatabase_url <> '' ORDER BY Priority");
+		
+		$data=array();
+		$content = '<div class="item-list"><ul id="res">';
+		While ($row = $query->fetchAssoc()) {		
+			
+			$name = $row["name"];
+			$url = $row["biodatabase_url"];
+			$id = $row["biodatabase_id"];
+			$biodatabase_link = $row["biodatabase_link"];
+			$resource_info = ecogene_resource_info($eg_id, $eck_id, $gene_name,$biodatabase_link);
+			for ($k=0; $k<count($resource_info); $k++){
+			if ($resource_info[$k]->displayid == "") {
+				
+//				$items[]['data'] = '<a href="'.$base_url.'/?q=gene/'.$eg_id.'">'.$name.':None</a>';
+				$content = $content. "<li class=\"leaf\"><a href=\"/drupal/?q=gene/$eg_id\">". $name.":None"."</a></li>";
+			} 
+			else {
+//				$items[]['data'] = '<a href="'.$url.$resource_info[$k]->displayid.'">'.$name.':'. $resource_info[$k]->displayname.'</a>';
+				
+				$content = $content. "<li class=\"leaf\"><a href=\"".$url.$resource_info[$k]->displayid."\">". $name.":".$resource_info[$k]->displayname."</a></li>";
+			}
+			}
+		}
+		
+		
+		$query = db_query("SELECT * FROM t_biodatabase Where display = 1 and biodatabase_url <> '' ORDER BY name");
+		$children = array();
+//		a href="javascript:show_more_res()"
+		$content .= '<li class="collapsed" id="more_res_li"><a href="javascript:show_more_res()">More resources</a>';
+		$content .= '<div class="item-list"><ul id="more_res" style="display: none">';
+		While ($row = $query->fetchAssoc()) {
+						
+			$name = $row["name"];
+			$url = $row["biodatabase_url"];
+			$id = $row["biodatabase_id"];
+			$biodatabase_link = $row["biodatabase_link"];
+			$resource_info = ecogene_resource_info($eg_id, $eck_id, $gene_name,$biodatabase_link);
+			for ($k=0; $k<count($resource_info); $k++){
+			if ($resource_info[$k]->displayid == "") {
+//				$children[]['data'] = '<a href="'.$base_url.'/?q=gene/'.$eg_id.'">'. $name.':None</a>';
+				
+				$content = $content. "<li class=\"leaf\"><a href=\"/drupal/?q=gene/$eg_id\">". $name.":None"."</a></li>";
+			} 
+			else {
+//				$children[]['data'] = '<a href="'.$url.$resource_info[$k]->displayid.'">'.$name.':'. $resource_info[$k]->displayname.'</a>';
+				
+				$content = $content. "<li class=\"leaf\"><a href=\"".$url.$resource_info[$k]->displayid."\">". $name.":".$resource_info[$k]->displayname."</a></li>";
+			}
+			}
+		}
+		
+//		$items[] = array(
+//						'class' => array('resource'=>'resource'),	
+//						'id' => 'more_res',					
+//						'data' => '<a  href="javascript:show_more_res()">'.'More resources'.'</a>',
+//						'children' => $children,
+//												
+//			);
+//		
+//		if($items)
+//		{
+//  			$variables = array('items'=>$items, 'title'=>'', 'type'=>'ul', 'attributes' => array());
+//  			$content = theme_item_list($variables);
+//  		}
+  	
+		$content .='</ul></div></li></ul></div>';
+
+		drupal_add_js('sites/all/modules/ecogene_gene/genepage.js');
+  		
+  		db_set_active($name = 'default');
+  			
+  		
+  		return $content;
+}
+function ecogene_resource_info($eg_id, $eck_id, $gene_name,$link)
+{
+	$virtual_eg_id = false;
+	$resource_info = array();
+	if ($link == "eco") {
+		$resource_info[0]->displayid = $eg_id;
+		$resource_info[0]->displayname= $gene_name;
+	} elseif ($link == "eck") {
+
+		$resource_info[0]->displayname = $gene_name;
+		$resource_info[0]->displayid = $eck_id;
+
+	}elseif ($link == "gene") {
+
+		$resource_info[0]->displayname = $gene_name;
+		$resource_info[0]->displayid = $gene_name;
+
+	}
+	else {
+
+		if (($virtual_eg_id && $link=='3') || ($virtual_eg_id && $link=='73') || ($virtual_eg_id && $link=='74'))
+		{
+			if($link=='3')// for b num only the primary b num (biggest number) is used
+			$query = db_query("SELECT accession_id FROM t_biodatabase_link where eg_id = '$virtual_eg_id' and biodatabase_id = '$link' ORDER BY accession_id DESC LIMIT 0, 1");
+			else
+			$query = db_query("SELECT accession_id FROM t_biodatabase_link where eg_id = '$virtual_eg_id' and biodatabase_id = '$link' ");
+		}
+		else {
+			if($link=='3')// for b num only the primary b num (biggest number) is used
+			$query = db_query("SELECT accession_id FROM t_biodatabase_link where eg_id = '$eg_id' and biodatabase_id = '$link' ORDER BY accession_id DESC LIMIT 0, 1");
+			else
+			$query = db_query("SELECT accession_id FROM t_biodatabase_link where eg_id = '$eg_id' and biodatabase_id = '$link' ");
+		}
+	
+
+		$j = 0;
+
+		While  ($row = $query->fetchAssoc()) {
+			$resource_info[$j]->displayname = $row['accession_id'];
+
+			if ((substr($resource_info[$j]->displayname ,0,1)) == 'g') {
+
+				$resource_info[$j]->displayid = (substr($resource_info[$j]->displayname ,1));
+
+			} elseif ((substr($resource_info[$j]->displayname ,0,2)) == 'CG') {
+
+				$resource_info[$j]->displayid = (substr($resource_info[$j]->displayname ,2));
+
+			} else {
+
+				$resource_info[$j]->displayid = $resource_info[$j]->displayname;
+
+			}
+
+			$j ++;
+		}
+	}
+	return $resource_info;
+}
+
+function check_keio($eg_id, &$keio_array)
+{
+	db_set_active("ecogene");
+	$is_keio = FALSE;
+
+	$query = db_query("
+		SELECT 
+			tko.comment kocomment,
+			tko.strain_number kostrain, 
+			tko.mutation komutation, 
+			tko.plate_number koplate, 
+			tko.row korow, tko.column kocolumn 
+		FROM 
+			t_ko_collection tko 
+		WHERE 
+			tko.eg_id = :eg_id
+		ORDER BY
+			tko.strain_number	
+			",
+	 	array(':eg_id'=>$eg_id)
+	 );
+	
+	if($row = $query->fetchAssoc())	
+	{
+		$is_keio = TRUE;
+		
+		$keio_array = $row; 
+		
+		if($row = $query->fetchAssoc())	
+		{
+			$keio_array['koplate_2'] = $row['koplate'];
+			$keio_array['korow_2'] = $row['korow'];
+			$keio_array['kocolumn_2'] = $row['kocolumn']; 
+		}
+	}	
+ 		 	
+	return $is_keio;
+		
+}
+
+function check_aska($eg_id, &$aska_array)
+{
+	$is_aska = FALSE;
+	
+	$query = db_query(" 
+		SELECT
+			taska.plate_number askaplate,
+			taska.row askarow, 
+			taska.column askacolumn, 
+			taska.comment askacomment,
+			taska.N_terminal_primer, 
+			taska.C_terminal_primer
+		FROM 
+			t_aska_collection taska 
+		WHERE 
+			taska.eg_id = :eg_id
+		", 
+		array(':eg_id'=>$eg_id)
+	);
+	
+	if($row = $query->fetchAssoc())	
+	{
+		$is_aska = TRUE;
+		
+		$aska_array = $row; 
+		
+		
+	}	
+	return $is_aska;
+		
+}
+function askakeio_title($eg_id)
+{
+	db_set_active("ecogene");
+	
+	$keio_array = array();
+	$aska_array = array();
+	
+	$is_keio = check_keio($eg_id, $keio_array);
+	$is_aska = check_aska($eg_id, $aska_array);
+	
+	$title_text = array();
+	
+	if ($is_aska) 
+	{
+		$title_text[] = 'ASKA';
+	}
+	if ($is_keio) 
+	{
+		$title_text[] = 'KEIO';
+	}
+	if (empty($title_text))
+	{
+		$title = 'No ASKA/KEIO';
+	}
+	else 
+	{
+		$title = implode('/', $title_text);
+	}
+	db_set_active("default");
+	return $title;
+}

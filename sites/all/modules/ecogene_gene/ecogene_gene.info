@@ -1,0 +1,8 @@
+; $Id: onthisdate.info,v 1.0 2010/01/07 05:50:55 dries Exp $
+name = EcoGene
+description = Gene
+version = 3.0
+core = 7.x
+
+files[] = ecogene_gene.module
+stylesheets[all][] = genepage.css

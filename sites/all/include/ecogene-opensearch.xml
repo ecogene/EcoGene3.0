@@ -1,0 +1,7 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+<ShortName>EcoGene</ShortName>
+<Description>Search Ecoli K-12  genes</Description>
+  <Image height="16" width="16" type="image/gif">http://www.ecogene.org/3.0/sites/all/images/logo-3.gif</Image>
+  <Image height="64" width="64" type="image/gif">http://www.ecogene.org/3.0/sites/all/images/logo-3.gif</Image>
+<Url type="text/html" method="GET" template="http://www.ecogene.org/3.0/?q=ecosearch/gene/search&amp;search_type=gene&amp;main_search={searchTerms}"/>
+</OpenSearchDescription>

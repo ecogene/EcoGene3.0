@@ -1,0 +1,28 @@
+@CHARSET "ISO-8859-1";
+/* $Id: node.css,v 1.18 2010/09/17 14:53:21 dries Exp $ */
+
+#ecoarray-experiment-form div.fieldset-wrapper > div,
+	#ecoarray-experiment-form div.fieldset-wrapper > p
+{
+	float: left;	
+	padding-left: 10px;
+}
+#ecoarray-experiment-form input.form-submit
+{
+	dispaly: block;
+	float: left;	
+	margin-left: 20px;
+}
+
+#ecoarray-gene-form div.fieldset-wrapper > div
+{
+	float: left;	
+	padding-left: 10px;
+	padding-right: 10px;
+}
+#ecoarray-paper-form div.fieldset-wrapper > div
+{
+	float: left;	
+	padding-left: 10px;
+	padding-right: 10px;
+}	

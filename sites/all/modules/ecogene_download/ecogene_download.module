@@ -1,0 +1,1462 @@
+<?php
+function ecogene_download_permission() {
+  return array(
+    'administer download' => array(
+      'title' => t('Administer download'),
+    ),
+    'anonymous download' => array(
+      'title' => t('Use download'),
+    ),
+    'restricted download' => array(
+      'title' => t('Use restricted download'),
+    ),
+  );
+}
+
+function ecogene_download_menu() {
+	
+	
+  
+  $items['ecodownload'] = array(
+    'title' => 'Download',
+    'page callback' => 'download_main',
+    'access arguments' => array('access content')
+    
+  );
+  $items['ecodownload/crossref'] = array(
+    					'title' => 'Cross Reference Mapping and Download', 	
+    					'page arguments' => array('ecogene_cross_ref_form'),
+    					'access callback' => TRUE,
+  						'weight' => 101,
+     					'page callback' => 'drupal_get_form',
+     					'file' => 'ecogene_xref.pages.inc',
+    
+  );
+ $items['ecodownload/report/%/%/%'] = array(
+   	'page callback' => 'ecogene_download_get_data',
+    'page arguments' => array(2, 3, 4),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'weight' => 12,
+ 'file' => 'ecogene_xref.pages.inc',
+  );
+  
+ $items['ecodownload/geneset/general'] = array(
+    'title' => 'General Version',        
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('geneset_upload_form'),
+    'access callback' => TRUE,
+  	'file' => 'ecogene_geneset_venn.pages.inc',
+    
+  );
+  $items['ecodownload/geneset'] = array(
+    'title' => 'GeneSets Venn Diagram & Boolean Query', 
+  	'page callback' => 'drupal_get_form',
+    'page arguments' => array('geneset_form'), 
+  	'file' => 'ecogene_geneset_venn.pages.inc',      
+    'access callback' => TRUE,
+  	 
+  );
+   $items['ecodownload/geneset/ecogene'] = array(
+    'title' => 'GeneSets Venn Diagram & Boolean Query',    
+    'access callback' => TRUE,  	
+     'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+//  $items['ecodownload/circle'] = array(
+//    'title' => 'Circle EcoMap Tool',        
+//    'page callback' => 'download_circle_map',
+//    'access arguments' => array('administer download'),
+//	'page callback' => 'download_circle_map',
+//  	'file' => 'ecogene_download_map.pages.inc',
+//    
+//  );
+  
+//  $items['ecodownload/keio'] = array(
+//    'title' => 'Keio Download',        
+//    'page callback' => 'download_sequence',
+//    'access arguments' => array('restricted download'),
+//	'page callback' => 'download_keio',
+//    
+//  );
+//   $items['ecodownload/keio/download'] = array(
+//    'title' => 'Keio Download',        
+//    'page callback' => 'download_keio_return',
+//    'access arguments' => array('restricted download'),
+//    'file' => 'ecogene_download_keio.pages.inc',
+//    'type' => MENU_LOCAL_TASK,
+//  );
+  
+  $items['ecodownload/dbtable'] = array(
+    'title' => 'Database Table Download',        
+    'page callback' => 'download_dbtable',
+    'access arguments' => array('access content'),
+//    'file' => 'ecogene_download.pages.inc',
+    
+  );
+    $items['ecodownload/dbtable/download'] = array(
+    'title' => 'Database Download',        
+    'page callback' => 'download_dbtable_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_download.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['ecodownload/interval'] = array(
+    					'title' => 'Gene Interval Updater', 	
+    					'page arguments' => array('ecogene_spanup_form'),
+    					'access callback' => TRUE,
+  						'weight' => 102,
+     					'page callback' => 'drupal_get_form',
+     					'file' => 'ecogene_spanup.pages.inc',
+    
+  );
+  
+  $items['ecodownload/sequence'] = array(
+    'title' => 'Genome Sequence Download',        
+    'page callback' => 'download_sequence',
+    'access arguments' => array('access content'),
+//    'file' => 'ecogene_download.pages.inc',
+    
+  );
+  $items['ecodownload/sequence/download'] = array(
+    'title' => 'Sequence Download',        
+    'page callback' => 'download_sequence_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_download.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['ecodownload/intergene/download'] = array(
+    'title' => 'Intergenic Region Download',        
+    'page callback' => 'download_intergene_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_download.pages.inc',
+   'type' => MENU_LOCAL_TASK,
+  );
+  $items['ecodownload/intergenedownload/%'] = array(
+    'title' => 'InterGene Download',        
+    'page callback' => 'intergenedownload',
+  	'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_download.pages.inc',
+//   'type' => MENU_LOCAL_TASK,
+  );
+  
+  $items['ecodownload/intergene'] = array(
+    'title' => 'Intergenic Region Download',        
+    'page callback' => 'download_intergene',
+    'access arguments' => array('access content'),
+//    'file' => 'ecogene_download.pages.inc',
+    
+  );
+  $items['ecodownload/primer'] = array(
+    'title' => 'PrimerPairs Design',        
+    'page callback' => 'download_primer',
+    'access arguments' => array('access content'),
+//    'file' => 'ecogene_download.pages.inc',
+    
+  );
+  $items['ecodownload/primer/download'] = array(
+    'title' => 'Primer Pairs Download',        
+    'page callback' => 'download_primer_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_download.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+ $items['ecodownload/seqlib/download'] = array(
+    'title' => 'Database Download',        
+    'page callback' => 'download_seqlib_return',
+    'access arguments' => array('access content'),
+    'file' => 'ecogene_download.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+function ecogene_download_init()
+{
+	 drupal_add_css(drupal_get_path('module', 'ecogene_download') . '/ecogene_download.css');
+		drupal_add_js(drupal_get_path('module', 'ecogene_download') . '/ecogene_download.js');
+}
+function download_main()
+{
+	global $base_url;
+	$content = '<div id="downlad_main_page">';
+	
+	$content .= '
+	<p><strong>Gene Interval Updater <a href="'.$base_url.'/?q=ecodownload/interval">Go to page</a></strong></p>
+
+<p>Gene Interval Updater is a tool that can be used to convert U00096.2 gene (and feature) genomic addresses to U00096.3 coordinates. The MG1655(Seq) [ATCC 700926] represented in Genbank U00096.2 [4,639,675 bp] has several sequence errors, including two missed IS element insertions, that were reported in 2012 by Freddolino et al. [pmid: 22081388]. We have confirmed these DNA sequence errors and corrected them, creating U00096.3 [4,641,652 bp]. MG1655(Seq) has three previously unknown gene mutations, in <i>crl</i>, <i>gatC</i> and <i>glpR</i>; two sequencing errors in <i>ylbE</i> were corrected, including a frameshift error that restored this ORF previously thought to be a pseudogene.
+</p>
+
+	<p><strong>EcoGene Database Table <a href="'.$base_url.'/?q=ecodownload/dbtable">Go to page</a></strong></p>
+
+<p>Download a customized table from the current EcoGene database. The table will be a tab delimited ascii text file. You can specify the fields you want to download and each field will be separated by a tab. Please be aware that the database contents are being altered daily and that the contents of this download can change at anytime.
+</p>
+
+<p><strong>GeneSets Venn Diagram and Boolean Query <a href="'.$base_url.'/?q=ecodownload/geneset">Go to page</a></strong>
+</p>
+<p>A graphic presentation of Boolean query comparisons using of two or three GeneSets can be displayed in an interactive Venn diagram. 
+Boolean queries can be executed using EcoGene GeneSets or user-specified GeneSets. 
+EcoGene GeneSets are collections of genes clustered in EcoTopics or EcoArray. 
+User provided GeneSets are lists of EG accession numbers uploaded at a "GeneSets Venn Diagram and Boolean Query" page, accessible using the Download tab or Download in the Navigation menu. EcoSearch can be used to obtain a list of user-specified EG numbers from a query or from an uploaded ID file containing gene names or any other unique gene identifiers. Gene names that are synonyms are mapped to primary genes. 
+</p>
+
+<p><strong>Cross Reference Mapping and Download  <a href="'.$base_url.'/?q=ecodownload/crossref">Go to page</a></strong>
+</p>
+<p>Cross Reference Mapping and Download page was created for user access to many additional accession numbers and other gene identifiers such as gene name and synonyms. The E. coli K-12 gene accession numbers from over 30 other databases were collected to enable the construction of hyperlinks from EcoGene GenePages to the gene pages at other websites and to easily update tables that lack EG or ECK ids to the most recent gene names and functions. 
+</p>
+
+<p><strong> PrimerPairs Design and Download <a href="'.$base_url.'/?q=ecodownload/primer">Go to page</a></strong>
+</p>
+';
+//	<p>The application generates large sets of paired DNA sequences surrounding all protein and RNA genes of Escherichia coli K-12.  Many DNA fragments, which these primers amplify, can be used to implement a genome reengineering strategy using complementary in vitro cloning and in vivo recombineering. 
+//</p>
+$content .= '
+<p>PrimerPairs is an embedded design tool for obtaining genome-wide PCR primer sequences for generating deletion-insertions or making an ordered clone library based on the current EcoGene gene interval annotations. The user has the options of setting primer length, offset length in basepairs inside or outside of genes, add-on sequences for adding restriction sites, add-on sequences for amplifying kan or cat antibiotic resistance cassettes. PrimerPairs can detect and correct primer sequences that delete part of an adjacent overlapping gene. The offending primers are repositioned automatically to avoiding the double deletion problem found in the Keio mutant collection. PrimerPairs has previously been described in detail <a href="http://www.ncbi.nlm.nih.gov/pubmed/21815083">(Zhou and Rudd 2011)</a>. 
+</p>
+<p><strong>E. coli K-12 MG1655 Sequence  <a href="'.$base_url.'/?q=ecodownload/sequence">Go to page</a></strong>
+</p>
+<p>Download any E. coli K-12 genomic DNA sub-sequence. Instead of downloading the complete sequence, users can specify a sub-sequence to be downloaded by specifying the start and the end positions (genomic addess) on the complete sequence. Users can also request the reverse complement of the sub-sequence. The current MG1655 genome sequence in Genbank (U00096.3) is the default, but the two previous versions (U00096.2, U00096.1) are also made available for comparison purposes.
+</p>
+<p><strong>E. coli K-12 Intergenic Region Download <a href="'.$base_url.'/?q=ecodownload/intergene">Go to page</a></strong>
+</p>
+';
+$content .= '
+<p>Download from the current database the intergenic region information (in a tab delimited ascii table) or intergenic DNA sequences (in a FASTA library file). The intergenic sequence intervals are named and oriented according to the flanking genes. One option will remove the repeat family DNA sequences such as CRISPR and REP from the intergenic regions, causing the names to be dictated by the flanking genes or repeats. Another option will add in the overlapping regions of adjacent genes, listing their shared DNA sequences as having a negative length value. The intergenic regions contain many conserved regulatory sequences such as promoters, terminators, and transcription factor binding sites.
+</p><p><i>Intergenic Repeat Families Topic Link is <a href="topic/108">here</a></i></p>
+</p>
+';
+//$content .= '<p>Overlaps have negative length values. See Editorial. Download an E. coli K-12 Intergenic Region Table from the current EcoGene database. You have two choices for output file format. One is the tab delimited text file, the other is an HTML format file. You can also specify the fields you want to download and each field will be separated by a tab.
+//</p>';
+$content .=
+'
+<p>
+<strong> Complete A complete listing of the <a href="'.$base_url.'/?q=verified_set">Verified Set</a> for downloading.  </strong>
+</p>
+<p><i>Verified Set Topic Link is <a  href="topic/304">here</a></i>
+</p>
+<p><strong> Daily updated EcoProt and EcoGene </strong><br />
+<ul>
+<li>EcoProt (no pseudogenes) <a href="http://www.ecogene.org/files/EcoProt_no_pseudo.lib">download</a>
+<li>EcoProt pseudogenes (including incomplete and hypothetically reconstructed pseudogene translations) <a href="http://www.ecogene.org/files/EcoProt_pseudo.lib">download</a>
+
+<li>EcoGene (protein-coding, no pseudogenes) <a href="http://www.ecogene.org/files/EcoGene_no_pseudo.lib">download</a>
+<li>EcoGene (protein-coding, including incomplete and hypothetically reconstructed pseudogenes) <a href="http://www.ecogene.org/files/EcoGene_pseudo.lib">download</a>
+<li>EcoGene (RNA genes only) <a href="http://www.ecogene.org/files/EcoGene_rna.lib">download</a>
+</ul>
+<i>Pseudogene Topic Link is <a  href="topic/207">here</a></i>
+</p>
+
+<p><strong>Daily Updated PDF Map of the E. coli chromosome </strong> <a href="http://www.ecogene.org/files/EcoMap.pdf">download</a>
+
+<p><strong> EcoGene OpenSearch plugin </strong> 
+<a href="javascript:window.external.AddSearchProvider(\''.$base_url.'/sites/all/include/ecogene-opensearch.xml\')">	Install EcoGene Browser Toolbar Search</a></p>
+
+'.
+//<<p><strong> Dynamic EcoMap PDF Generation using PrintMap <a href="'.$base_url.'/?q=ecodownload/primer">Go to page</a></strong>
+//</p>
+//
+//
+//<p>Dynamic (EcoMap19 + daily updates) PDF PrintMaps of the E. coli chromosome: not yet activated. See Editorial
+//</p>
+//
+//<p><strong>SpanUp Utility <a href="'.$base_url.'/?q=ecodownload/primer">Go to page</a></strong>
+//</p>
+//<p>Upload a two or three column file, which contains U00096.1 version genomic positions (two column) or addresses (three column) in bp. The last column is for the text id or descriptor. The program will automatically update and correct these address according to a change (correction) table based on U00096.2. ".p" and .xtr" are extension conventions for EcoMap format files with single bp address positions. ".spn" is the EcoMap extension for three solumn SpanFiles, in which the first two columns denote the inclusive basepair(bp) interval address. Any text files that follow this simple format will be updated to the new Genbank U00096.2 coordinates. Please report any bugs. Thank you. EcoGene Management. krudd@miami.edu
+'</p>
+</div>
+';
+	return $content;
+}
+function ecodownload_forms() {
+  $forms['download_dbtable_form']= array(
+    'callback' => 'download_dbtable_form',
+    'callback arguments' => array('download_dbtable_form'),
+  );
+  $forms['download_intergene_form']= array(
+    'callback' => 'download_intergene_form',
+    'callback arguments' => array('download_intergene_form'),
+  );
+  $forms['download_sequence_form']= array(
+    'callback' => 'download_sequence_form',
+    'callback arguments' => array('download_sequence_form'),
+  );
+  $forms['circle_map_form']= array(
+    'callback' => 'circle_map_form',
+    'callback arguments' => array('circle_map_form'),
+  
+  	
+  );
+  
+  return $forms;
+}
+
+
+function submit_sequence_form($form, &$form_state)
+{
+
+    unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+    unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+	drupal_goto('ecodownload/sequence/download',array('query'=>$query));
+
+}
+function submit_keio_form($form, &$form_state)
+{
+
+    unset($form_state['values']['form_id']);
+    unset($form_state['values']['form_build_id']);
+    unset($form_state['values']['form_token']);
+    unset($form_state['values']['submit']);
+	
+     
+
+    foreach ($form_state['values'] as $key => $value)
+    {
+    	if($key==='form_id' || $key==='form_build_id' || $key==='form_token' || $key==='submit' || $key ==='op')
+    	{
+			continue;    		
+    	}
+    	if(!empty($value))
+    	{
+    		$query[$key] = $value;
+    	}
+    		
+    }
+	drupal_goto('ecodownload/keio/download',array('query'=>$query));
+
+}
+
+function download_intergene_form($form, &$form_state) {
+	 
+	$form['#action'] = url('ecodownload/intergene/download');
+	
+	$form['filter']['is_pseudo'] = array(
+  		'#type' => 'checkbox',
+  		'#title' => t('Exclude <a href="topic/108">intergenic repeats</a>  (REP, IRU, etc.) from intergenic region sequence files '),
+   		'#default_value' => 0,
+  	
+  		'#attributes' => array('title' => t('Will affect both table and sequece download')),
+	);
+	$form['filter']['is_overlap'] = array(
+  		'#type' => 'checkbox',
+  		'#title' => t('Include overlapping gene regions as intergenic regions with negative interval lengths equal to the length of the gene overlap'),
+   		'#default_value' => 0,
+  	
+  		'#attributes' => array('title' => t('Will affect both table and sequece download')),
+	);
+	
+	
+//	$form['intergene_region'] = array(
+//  	'#type' => 'fieldset',
+//  	'#title' => t('Download E. coli K-12 Intergenic Region Information Table'),
+//  	'#collapsible' => TRUE,
+//  	'#collapsed' => FALSE,
+//  );
+
+
+  
+    
+	$form['intergene_region'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Option 1: Table (tab-delimited text file) Download'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+ 
+  $form['intergene_region']['fields'] = array(
+  	'#type' => 'checkboxes',
+  	'#title' => t('Select the fields you wish to download'),
+  	
+  	'#default_value' => variable_get('fields', array('vname','vlength','vorientation','vleft_end','vright_end','vcentisome')),
+  	'#options' => array(
+    	'vname' => t('Interval Name (Name)'),
+    	'vlength' => t('Length (Length)'),
+    	'vorientation' => t('Orientation (Orientation)'),
+  		'vleft_end' => t('Left End (L_End)'),
+    	'vright_end' => t('Right End (R_End)'),
+    	'vcentisome' => t('Centisome (Cs)'),
+  		)
+  );
+//  $form['intergene_region']['radio'] = array(
+//  	'#type' => 'radios',
+//  	'#title' => t('Output Format'),
+//  	'#default_value' => variable_get('gene_type', 1),
+//  	'#options' => array('1'=>t('Tab Delimited Text File')),
+//	);
+   $form['intergene_region']['submit'] = array('#type' => 'submit', '#name' => 'intergene_table', '#value' => t('Download Table'));
+  $form['#submit'][] = 'submit_intergene_form';
+   
+  	$form['intergene_seq'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Option 2: DNA sequence (FASTA format) Download'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+//  		
+  	 $form['intergene_seq']['submit'] = array('#name' => 'intergene_sequence', '#type' => 'submit', '#value' => t('Download Sequences'));
+//  	 $form['#submit'][] = 'submit_intergene_form';
+  return $form;
+}
+function download_dbtable_form($form, &$form_state, $egids) {
+
+	$form['#action'] = url('ecodownload/dbtable/download');
+	$form['#attributes'] = array('name'=>'dbtable_form');
+ 	$form['egids'] = array('#type' => 'hidden', '#value' => $egids);
+	
+  $form['filter'] = array(
+  	'#type' => 'fieldset',
+  	'#title' => t('Download Options'),
+  	'#collapsible' => FALSE,
+  	'#collapsed' => FALSE,
+  );
+//  $form['filter']['database_name'] = array(
+//  	'#type' => 'select',
+////  	'#title' => t('Choose live or archive database'),
+////   	'#title_display' => 'visible',
+//	'#title' => t('Database is updated daily'),
+//	'#default_value' => variable_get('database_name','ecogene'),
+//  	'#options' => array(
+//    	'ecogene' => t('Live Database'),
+//  	),
+////  	'#description' => t('Choose from Live or Archive DataBasese'),
+//  	'#attributes' => array('title' => t('Choose Live or Archive DataBasese you wish to download from.')),
+//	);
+
+   $form['filter']['is_pseudo'] = array(
+   '#prefix' => '<label>EcoGene Database is updated daily</label>',
+  	'#type' => 'checkbox',
+  	'#title' => t('Exclude pseudogenes'),
+//   	'#title_display' => 'visible',
+   	'#default_value' => 0,
+  	
+// 	'#description' => t('Pseudogenes'),
+  	'#attributes' => array('title' => t('Check if you wish to exclude pseudogenes')),
+	);
+	
+  $form['filter']['gene_type'] = array(
+  '#type' => 'radios',
+  '#title' => t('Type of gene'),
+  '#default_value' => variable_get('gene_type', 'protein_rna'),
+  '#options' => array('protein_rna'=>t('protein and RNA'), 'protein'=>t('protein only'), 'rna'=>t('RNA only') ),
+);
+    
+$form['select_field'] = array(
+  	'#type' => 'fieldset',
+  	'#title' => t('Select the fields you wish to download'),
+  	'#collapsible' => FALSE,
+  	'#collapsed' => FALSE,
+  );
+  
+  $options = array();
+  foreach (db_table_fields_options() as $status) {
+    $options[$status['id']] = $status['title'];
+  }
+  
+  $form['select_field']['fields_1'] = array(
+  '#type' => 'checkboxes',
+  '#title' => t('Default options'),
+  '#title_display' => 'invisible',
+  '#default_value' => variable_get('fields_1', array('veg_id', 'vname')),
+  '#options' => $options,
+  	'#attributes' => array(
+      	'OnChange' => "toggleVisCol(this)",
+    ),
+  );
+ 
+   $form['select_field']['checkall'] = array(
+   	'#type' => 'checkbox',
+  	'#title' => t('Check/Uncheck All Fields'),
+   		'#attributes' => array(
+      	'OnClick' => "SetAllCheckBoxes('dbtable_form', 'fields_1', this.checked)",
+    ),
+   
+	);
+	
+
+   $form['demo'] = array(
+    '#type' => 'fieldset',
+  	'#title' => t('A sample table showing the fields you selected: '),
+  	'#collapsible' => FALSE,
+  	'#collapsed' => FALSE,
+  );
+    $form['demo']['html'] = array(
+			'#markup' => '<div id ="demo_downloadtable">
+
+			<table><tbody>
+<tr>
+<td class="tcol_eg_id" style="display: table-cell;"><b>EG</b></td><td class="tcol_eck_id" style="display: none;"><b>ECK</b></td>
+<td class="tcol_name" style="display: table-cell;"><b>Gene</b></td>
+<td class="tcol_synonym" style="display: none;"><b>Syn</b></td>
+<td class="tcol_type" style="display: none;"><b>Type</b></td>
+<td class="tcol_length" style="display: none;"><b>Len</b></td><td class="tcol_orientation" style="display: none;"><b>Ori</b></td>
+<td class="tcol_left_end" style="display: none;"><b>LeftEnd</b></td><td class="tcol_right_end" style="display: none;"><b>RightEnd</b></td>
+<td class="tcol_centisome" style="display: none;"><b>Cs</b></td>
+<td class="tcol_mw" style="display: none;"><b>MW</b></td>
+<td class="tcol_protname" style="display: none;"><b>Protein</b></td>
+<td class="tcol_function" style="display: none;"><b>Function</b></td>
+<td class="tcol_description" style="display: none;"><b>Description</b></td>
+<td class="tcol_comments" style="display: none;"><b>Comments</b></td>
+<td class="tcol_gi_id" style="display: none;"><b>GI</b></td>
+<td class="tcol_sp_id" style="display: none;"><b>SP</b></td>
+<td class="tcol_ws_id" style="display: none;"><b>WISC</b></td>
+<td class="tcol_asap_id" style="display: none;"><b>ASAP</b></td>
+<td class="tcol_jw_id" style="display: none;"><b>JW</b></td>
+<td class="tcol_cg_id" style="display: none;"><b>CG</b></td>
+<td class="tcol_eb_id" style="display: none;"><b>EB</b></td>
+</tr>
+
+
+<tr>
+<td class="tcol_eg_id" style="display: table-cell;">EG10001</td><td class="tcol_eck_id" style="display: none;">ECK4045</td>
+<td class="tcol_name" style="display: table-cell;">alr</td>
+<td class="tcol_synonym" style="display: none;">Null</td><td class="tcol_type" style="display: none;">aa</td>
+<td class="tcol_length" style="display: none;">359</td><td class="tcol_orientation" style="display: none;">Clockwise</td><td class="tcol_left_end" style="display: none;">4263805</td><td class="tcol_right_end" style="display: none;">4264884</td><td class="tcol_centisome" style="display: none;">91.90</td>
+<td class="tcol_mw" style="display: none;">39152.94</td>
+<td class="tcol_protname" style="display: none;">alanine racemase 1, PLP-binding, biosynthetic</td>
+<td class="tcol_function" style="display: none;">Enzyme; Amino acid biosynthesis: Alanine</td>
+<td class="tcol_description" style="display: none;">Alanine racemase</td><td class="tcol_comments" style="display: none;">Null</td>
+
+
+<td class="tcol_gi_id" style="display: none;">g1790487</td><td class="tcol_sp_id" style="display: none;">P0A6B4</td>
+<td class="tcol_ws_id" style="display: none;">b4053</td>
+<td class="tcol_asap_id" style="display: none;">13272</td>
+<td class="tcol_jw_id" style="display: none;">JW4013</td>
+<td class="tcol_cg_id" style="display: none;">CG1034</td>
+<td class="tcol_eb_id" style="display: none;">EB0001</td>
+
+</tr>
+
+
+<tr>
+<td class="tcol_eg_id" style="display: table-cell;">EG10002</td><td class="tcol_eck_id" style="display: none;">ECK0753</td>
+<td class="tcol_name" style="display: table-cell;">modB</td>
+<td class="tcol_synonym" style="display: none;">chlJ</td><td class="tcol_type" style="display: none;">aa</td>
+
+<td class="tcol_length" style="display: none;">229</td><td class="tcol_orientation" style="display: none;">Clockwise</td><td class="tcol_left_end" style="display: none;">795085</td><td class="tcol_right_end" style="display: none;">795774</td><td class="tcol_centisome" style="display: none;">17.14</td><td class="tcol_mw" style="display: none;">24938.82</td>
+<td class="tcol_protname" style="display: none;">molybdate transporter subunit</td>
+<td class="tcol_function" style="display: none;">Transport; Transport of small molecules: Anions</td>
+<td class="tcol_description" style="display: none;">Molybdate uptake; chlorate resistance; membrane-spanning ABC protein</td><td class="tcol_comments" style="display: none;">Null</td>
+<td class="tcol_gi_id" style="display: none;">g1786980</td>
+<td class="tcol_sp_id" style="display: none;">P0AF01</td><td class="tcol_ws_id" style="display: none;">b0764</td><td class="tcol_asap_id" style="display: none;">2603</td>
+<td class="tcol_jw_id" style="display: none;">JW0747</td><td class="tcol_cg_id" style="display: none;">CG18478</td>
+<td class="tcol_eb_id" style="display: none;">EB0002</td>
+
+</tr>
+<tr><td colspan="100%">.......</td></tr></tbody></table>
+</div>',
+  );
+  
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Download'));
+  $form['#submit'][] = 'submit_dbtable_form';
+
+  return $form;
+}
+function db_table_fields_options()
+{
+	$options = array(
+	 	0=> array('id'=>'veg_id',		'head'=>'EG',	'title'=> t('EcoGene ID (EG)'), 					'weight'=>0),
+	 	1=> array('id'=>'veck_id',		'head'=>'ECK',	'title'=> t('K-12 Gene Accession Number (ECK)'), 	'weight'=>1),
+	 	2=> array('id'=>'vname',		'head'=>'Gene',	'title'=> t('Gene Name'), 						'weight'=>2),
+	 	
+	 	
+	 	3=> array('id'=>'vsynonym',		'head'=>'Syn',	'title'=> t('Synonym (Syn)'), 						'weight'=>3),
+	 	4=> array('id'=>'vtype',		'head'=>'Type',	'title'=> t('Type'), 						'weight'=>4),
+	 	5=> array('id'=>'vlength',		'head'=>'Len',	'title'=> t('Length (Len)'), 						'weight'=>5),
+	 	6=> array('id'=>'vorientation',	'head'=>'Ori',	'title'=> t('Orientation (Ori)'), 					'weight'=>6),
+	 	7=> array('id'=>'vleft_end',	'head'=>'LeftEnd',	'title'=> t('Left End'), 				'weight'=>7),
+	 	8=> array('id'=>'vright_end',	'head'=>'RightEnd',	'title'=> t('Right End'), 			'weight'=>8),
+	 	9=> array('id'=>'vcentisome',	'head'=>'Cs',		'title'=> t('Centisome (Cs)'), 					'weight'=>9),
+	 	
+	 	10=> array('id'=>'vmw',			'head'=>'MW',			'title'=> t('Molecular Weight (MW)'), 		'weight'=>10),
+	 	11=> array('id'=>'vprotname',	'head'=>'Protein',		'title'=> t('Protein Name'), 		'weight'=>11),
+	 	21=> array('id'=>'vfunction',	'head'=>'Function',		'title'=> t('Protein Function'), 		'weight'=>12),
+	 	12=> array('id'=>'vdescription','head'=>'Description',	'title'=> t('Description'), 	'weight'=>13),
+	 	13=> array('id'=>'vcomments',	'head'=>'Comments',		'title'=> t('Comments'), 		'weight'=>14),	
+	 	 	
+	 	14=> array('id'=>'vgi_id',		'head'=>'GI',	'title'=> t('GenBank GI ID (GI)'), 					'weight'=>15),	 	
+	 	15=> array('id'=>'vsp_id',		'head'=>'SP',	'title'=> t('UniProtKB/Swiss-Prot (SP)'), 			'weight'=>16),
+	 	16=> array('id'=>'vws_id',		'head'=>'b#',	'title'=> t('b number (b#)'), 						'weight'=>17),
+	 	17=> array('id'=>'vasap_id',	'head'=>'ASAP',	'title'=> t('ASAP ID (ASAP)'), 						'weight'=>18),
+	 	18=> array('id'=>'vjw_id',		'head'=>'JW',	'title'=> t('GenoBase ID (JW)'), 					'weight'=>19),
+	 	19=> array('id'=>'vcg_id',		'head'=>'CG',	'title'=> t('Coli Genetic Stock Center ID (CG) '),	'weight'=>20),	 	
+//	 	20=> array('id'=>'veb_id',		'head'=>'EB',	'title'=> t('EchoBase ID (EB)'), 					'weight'=>21),
+	);
+	
+	return $options;
+}
+function download_keio()
+{
+	global $base_url;
+	drupal_set_title('Keio Data Second Deletion Check ');
+	$content='<form   enctype="multipart/form-data" name="aForm" action="?q=ecodownload/keio/download" method=POST >
+ 	<table style="border: 1px solid #CCCCCC">
+ 		<tr>
+ 			<td>Extension Length (RBS): </td>
+ 			<td><input size="5" name="extention" value="0" disabled> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+		<tr>	
+ 			<td>Overlap greater than (>): </td> 
+			<td><input size="5" name="overlap_thre" value="0"></td>
+		</tr>	
+		<tr>
+			<td>Report type:</td>
+			<td> <input type="radio" name="del_rbs" checked value="del" onchange="change_keio_report_type(this.form)">Deletion Report &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="del_rbs" unchecked value="rbs" onchange="change_keio_report_type(this.form)">RBS Report  </td>
+		</tr>
+		<tr>
+			<td>Keio file:</td>
+			<td> <input type="radio" name="default_file" value="keio" checked onchange="change_keio_file(this.form)">Use the original keio file,   	
+ 				<input type="hidden" name="MAX_FILE_SIZE" value="5000000">
+ 				OR <br />
+ 				<input type="radio" name="default_file" value="other" onchange="change_keio_file(this.form)">send your modified file: <input name="userfile" type="file" disabled> <br />
+ 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File format: ECK0001	thrL	+	193	234 (ECK, Name, Orientation, Left, Right)
+ 			</td>
+ 		</tr>
+ 	</table>			
+ 	
+ 	<input class="form-submit" type="submit" value="Submit">
+	</form>
+	';
+	return $content;
+//	
+//		$build['content'] = array(
+//		'this_does_not_matter_too_much2' 
+//			=> array(
+//				'form' => drupal_get_form('download_keio_form'),
+//			),
+//        
+//    );
+//    
+//	return $build;	
+}
+function download_keio_form($form, &$form_state){
+
+	$form['#attributes'] = array('name'=>'keio_form');
+  	$form['keio_filter'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Keio Data Second Deletion Check'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+  	
+	$form['keio_filter']['extention'] = array(
+  	'#type' => 'textfield',
+  	'#title' => t('Extention Length:'),
+  	'#default_value' => '0',
+  	'#size' => 10,
+//  	'#field_prefix' => t('Extention Length:'),
+	'#field_suffix' => t('bp'),
+	'#disabled' => TRUE,
+	);
+	
+	$form['keio_filter']['overlap_thre'] = array(
+	'#title' => t('Overlap greater than ( > ): '),
+  	'#type' => 'textfield',
+   	'#default_value' => '0',
+  	'#size' => 10,
+	'#field_suffix' => t('bp')
+	);
+	
+  	$form['keio_filter']['del_rbs'] = array(
+  	'#type' => 'radios',
+  	'#title' => t('Report type:'),
+ 	 '#default_value' => variable_get('del_rbs', 'del'),
+  	'#options' => array('del'=>t('Deletion Report'), 'rbs'=>t('RBS Report')),
+  	'#attributes' => array(
+      	'OnClick' => "change_keio_report_type(this.form)",
+  		)
+	);
+	
+	$form['keio_filter']['default_file'] = array(
+  	'#type' => 'radios',
+  	'#title' => t('Keio file:'),
+ 	 '#default_value' => variable_get('default_file', 'keio'),
+  	'#options' => array('keio'=>t('Use the original keio file'), 'other'=>t('send your modified file:')),
+	'#attributes' => array(
+      	'OnClick' => "change_keio_file(this.form)",
+  		)
+	);
+	
+	$form['keio_filter']['userfile'] = array(
+  	'#type' => 'file',
+	'#size' => 30,
+  	'#field_suffix' => t('<br />File format: ECK0001	thrL	+	193	234 (ECK, Name, Orientation, Left, Right)'),
+	'#disabled' => TRUE,
+	);
+	
+	$form['keio_filter']['MAX_FILE_SIZE'] = array(
+  	'#type' => 'hidden',
+	'#value' => "5000000",
+  	
+	);
+
+	
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
+  $form['#submit'][] = 'submit_keio_form';
+  return $form;
+}
+function download_dbtable()
+{
+	$egids = isset($_REQUEST['egids'])? $_REQUEST['egids']:"";
+	$egids = trim($egids);
+	
+	if($egids!==""){
+		$num_gene = count(explode(",",$egids));
+		$h2 = '<h2>You have chosen to download '.$num_gene.' EcoGene records </h2>';
+	}else{
+		$h2 = '';
+	}
+	$build['content'] = array(
+	 'this_does_not_matter_too_much1' 
+			=> array(
+			'#type' => 'markup',
+            '#markup' => $h2,
+        ),
+		'this_does_not_matter_too_much2' 
+			=> array(
+				'form' => drupal_get_form('download_dbtable_form', $egids),
+			),
+        
+    );
+
+	return $build;	
+	
+}
+function download_intergene()
+{
+	$build['content'] = array(
+		'this_does_not_matter_too_much2' 
+			=> array(
+				'form' => drupal_get_form('download_intergene_form'),
+			),
+        
+    );
+
+	return $build;	
+}
+function download_primer()
+{
+	$egids = isset($_REQUEST['egids'])? $_REQUEST['egids']:"";
+	$egids = trim($egids);
+	$is_mature_prot = false;
+    $header_content = primerpair_table_info($egids, $is_mature_prot);
+   
+    db_set_active("default");
+
+    $form = drupal_get_form('download_primer_form',$is_mature_prot, $egids);
+   
+	$build['content'] = array(
+		'this_does_not_matter_too_much1' 
+			=> array(
+			'#type' => 'markup',
+            '#markup' => $header_content,
+        ),
+		'this_does_not_matter_too_much' 
+			=> array(
+				'form' => $form,
+			),
+        
+    );
+	
+	return $build;	
+}	
+
+function primerpair_mature_prot($egidA,&$warning="")
+{
+	if(!count($egidA))
+	{
+		return false;
+	}
+	db_set_active("ecogene");
+		
+	$is_mature_prot = true;
+	
+	foreach($egidA as $value) {
+			$searchegs = $searchegs."'".trim($value)."',";
+	}
+	$searchegs = strrev(substr(strrev($searchegs),1));
+
+	
+	$query = db_query(' SELECT t_gene.eg_id 
+							FROM t_topic_gene_link 
+								LEFT JOIN t_gene ON t_topic_gene_link.eg_id=t_gene.eg_id
+							WHERE t_topic_gene_link.topic_id=522 
+							'
+							);
+
+	$topic_genes = $query->fetchCol();
+	
+	foreach($egidA as $value) {
+		if(!in_array($value, $topic_genes))
+		{
+			$is_mature_prot = false;
+			return $is_mature_prot;
+		}
+			
+	}
+	
+	$query = db_query(" SELECT t_gene.name 
+							FROM t_gene
+							WHERE t_gene.eg_id in  (".$searchegs.") 
+									and t_gene.eg_id not in 
+									(	SELECT tp.eg_id 
+		 								FROM t_product_protein tp
+		 								LEFT JOIN t_product_protein_features tpf 
+		 								ON 	tpf.protein_id=tp.protein_id
+		 							)
+							"
+							);
+	$gene_names = $query->fetchCol();
+	foreach($gene_names as $value) {
+		if(!in_array($value, $topic_genes))
+		{
+			$warning=$value." ";
+		}
+			
+	}
+	
+//	echo "\$is_mature_prot=".$is_mature_prot;
+//	echo "<br />\$warning=".$warning;		
+	return $is_mature_prot;
+	
+	
+}
+
+function primerpair_is_pseudo($searchegs,&$is_pseudo_msg="")
+{
+		db_set_active("ecogene");
+
+// check for IS element genes	
+		$query = "select count(eg_id) as num from t_gene where t_gene.eg_id in (".$searchegs.")";		
+		$query = $query." and (t_gene.eg_id  in (select distinct eg_id from t_topic_gene_link where topic_id='8')";
+		$query = $query." or t_gene.eg_id  in (select distinct eg_id from t_gene where eg_id like 'EG6%'))";
+	
+		$query_result = db_query($query);
+		$row = $query_result->fetchAssoc();
+		if($row)
+ 		{
+ 			$n_is = $row['num'];
+ 		}
+// check for pseudo genes
+ 		$query = "select count(eg_id) as num from t_gene where t_gene.eg_id in (".$searchegs.")";	
+		$query .= " and t_gene.eg_id in (select distinct eg_id from t_pseudogene)";
+		
+		$query_result = db_query($query);
+		$row = $query_result->fetchAssoc();
+		
+		if($row)
+ 		{
+ 			$n_pseudo = $row['num'];
+ 		}
+ 		if($n_pseudo>0)
+ 		{
+ 			$is_pseudo_msg = ", but ".$n_pseudo." pseudogene";
+ 			if($n_pseudo>1) $is_pseudo_msg .="s";
+ 			if($n_is>0){
+ 				if($n_is>1) 	$is_pseudo_msg .=" and ".$n_is." IS element genes";
+ 				else 			$is_pseudo_msg .=" and ".$n_is." IS element gene";  
+ 			}
+ 			
+ 			if(($n_is+$n_pseudo)>1) 		$is_pseudo_msg .= " have been eliminated and must be designed manually.";
+ 			else 							$is_pseudo_msg .= " has been eliminated and must be designed manually.";
+ 				
+ 			
+ 		}else 
+ 		{
+ 			if($n_is>0){
+ 				
+ 				if($n_is>1) 	$is_pseudo_msg =", but ".$n_is." IS element genes have been eliminated and must be designed manually.";
+ 				else 			$is_pseudo_msg =", but ".$n_is." IS element gene  has been eliminated and must be designed manually";  
+ 				
+ 			}else 
+ 			{
+ 				$is_pseudo_msg="";
+ 			}
+ 			
+ 		}
+}
+function primerpair_table_info($egids, &$is_mature_prot)
+{
+	global $base_url;
+	$content ="";
+	$is_mature_prot = false;
+	$is_pseudo_msg="";
+	$warning_msg = "";
+	if ($egids != "") {
+		
+		$egidA = array();
+		$searchegs = "";
+		if ($egids != "") {
+			$egidA = explode(',',$egids);
+		}
+		foreach($egidA as $value) {
+			$searchegs = $searchegs."'".$value."',";
+		}
+		//remove "," of last item
+		$searchegs = strrev(substr(strrev($searchegs),1));
+		
+		$is_mature_prot = primerpair_mature_prot($egidA,$warning_msg);
+		primerpair_is_pseudo($searchegs,$is_pseudo_msg);
+		
+		if($is_mature_prot)
+		{
+			$content.= "<p><em>You have chosen to download ".count($egidA)." EcoGene Primer Pairs";
+			if(strlen ($is_pseudo_msg)>0) 
+				$content .= $is_pseudo_msg."</em></p>";	
+			else
+				$content .= "</em></p>";		
+		
+//		echo "<BR>Note: All pseudogene and IS element gene entries will be eliminated";
+//		echo "<BR>All ".count($egidA)." genes encode signal peptides, which you can exclude in cloning offsets";
+			$content.= "<p><em>All ".count($egidA)." genes encode proven or predicted signal peptides,
+						 which you can exclude using cloning offsets to clone the mature proteins' codons</em></p>";
+		}else
+		{
+			$content.= "<p><em>You have chosen to download ".count($egidA)." EcoGene Primer Pairs";
+			if(strlen ($is_pseudo_msg)>0) 
+				$content .= $is_pseudo_msg ."</em></p>";	
+			else 
+				$content .= "</em></p>";		
+			//echo "<BR>Note: All pseudogene and IS element gene entries will be eliminated";
+		}
+
+	}else 
+	{
+		$content.= "<p>It will take time to download ALL EcoGene Primer Pairs records!<br />";
+		$content.= "You can use <a href='$base_url/?q=ecosearch'> search page </a>
+					to download the gene(s) you specify or go to a <a href='$base_url/?q=topic'>topice page</a> 
+					to download the genes associated with a specified topic.";
+	}
+
+	if($is_mature_prot) 
+	{
+		if(strlen ($warning_msg)>0){
+	
+			$content.= "<script> ";
+
+			$content.= "alertMessageMature='The following genes do not have mature feature entered currently. We will add them soon. $warning_msg'\n";	
+		//	echo "alert(alertMessage)";
+			$content.="</script>"	;
+		
+		}
+
+	}
+	return $content;
+}
+function download_primer_form($form, &$form_state, $is_mature_prot, $egids){
+	
+	$form['#attributes'] = array('name'=>'primer_form');
+	$form['#action'] = url('ecodownload/primer/download');
+	if(!empty($egids))
+	{
+		$form['egids'] = array('#type' => 'hidden', '#value' => $egids);
+	}
+	
+  	$form['options'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Step 1: Choose Download Options'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+  	$form['options']['gene_type'] = array(
+  		'#type' => 'radios',
+  		'#title' => t('Type of gene'),
+		'#default_value' => variable_get('type','prot'),
+  		'#options' => array(
+    		'prot' => t('protein'),
+  			'rna' => t('RNA'),
+  		),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()",)
+  	);
+  	$form['options']['start_len'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('start_len', 20),
+  		'#size' => 10,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('start primer(forward) length:'),
+  		'#field_suffix' => t('bp'),
+	);
+	$form['options']['stop_len'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('stop_len', 20),
+  		'#size' => 10,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('stop primer(reverse) length:'),
+		'#field_suffix' => t('bp'),
+	);
+	$form['cloning_deletion'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Step 2: Choose Cloning or Deletion'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+	$form['cloning_deletion']['clon_del'] = array(
+  		'#type' => 'radios',
+//  		'#title' => t('Cloning or Deletion '),
+		'#default_value' => variable_get('clon_del','cloning'),
+  		'#options' => array(
+    		'cloning' => t('cloning'),
+  			'deletion' => t('deletion'),
+  		),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()",)
+  	);
+  	$form['cloning_deletion']['cloning'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Options for Cloning'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+  	$form['cloning_deletion']['cloning']['clo_start_offset'] = array(
+  		'#type' => 'textfield',
+  		'#title' => t('Set offset'),
+  		'#default_value' => variable_get('clo_start_offset', 0),
+  		'#size' => 2,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('start offset: &nbsp;&nbsp;'),
+		'#field_suffix' => t('bp'),
+  		
+	);
+	if($is_mature_prot)
+	{
+		$form['cloning_deletion']['cloning']['clo_offset_type_start'] = array(
+  			'#type' => 'radios',
+  			'#title' => t('&nbsp;&nbsp;'),
+			'#default_value' => variable_get('clo_offset_type_start','outside'),
+  			'#options' => array(
+				'outside' => t('Outside'),
+				'inside' => t('Inside'),
+				'peptides' => t('Exclude signal peptides')
+  			),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()",)
+  		);
+	}
+  	else 
+  	{
+  		$form['cloning_deletion']['cloning']['clo_offset_type_start'] = array(
+  			'#type' => 'radios',
+  			'#title' => t('&nbsp;&nbsp;'),
+			'#default_value' => variable_get('clo_offset_type_start','outside'),
+  			'#options' => array(
+				'outside' => t('Outside'),
+				'inside' => t('Inside'),
+				
+  			),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()",)
+  		);
+  	}
+  	
+  	
+  	
+	$form['cloning_deletion']['cloning']['clo_stop_offset'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('clo_stop_offset', 0),
+  		'#size' => 2,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('stop offset: &nbsp;&nbsp;'),
+		'#field_suffix' => t('bp'),
+	);
+	$form['cloning_deletion']['cloning']['clo_offset_type_stop'] = array(
+  		'#type' => 'radios',
+//  		'#title' => t('Cloning or Deletion '),
+		'#default_value' => variable_get('clo_offset_type_stop','outside'),
+  		'#options' => array(
+    		'outside' => t('Outside'),
+  			'inside' => t('Inside'),
+  		),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()",)
+  	);
+	$form['cloning_deletion']['cloning']['clo_addon_type'] = array(
+  		'#type' => 'radios',
+  		'#title' => t('Add-ons: Enter sequence to add to primer 5\' ends'),
+		'#default_value' => variable_get('clo_addon_type','no'),
+  		'#options' => array(
+    		'no' => t('no add-ons'),
+  			'yours' => t('Your sequence'),
+  		),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()",)
+  	);
+  	$form['cloning_deletion']['cloning']['clo_start_add_ons'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('col_start_add_ons', ''),
+  		'#size' => 10,
+ 		'#field_prefix' => t('start (fwd) primer add-ons'),
+  		'#description' => t('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  							 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  							 end spacer'),
+//  		'#disabled' => TRUE,
+		
+	);
+	$form['cloning_deletion']['cloning']['clo_start_restrict'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('clo_start_restrict', ''),
+  		'#size' => 10,
+ 		'#description' => t('restriction site'),
+//		'#disabled' => TRUE,
+		
+	);
+	$form['cloning_deletion']['cloning']['clo_stop_add_ons'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('clo_stop_add_ons', ''),
+  		'#size' => 10,
+ 		'#description' => t('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  							 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  							 end spacer'),
+  		'#field_prefix' => t('stop (rev) primer add-ons&nbsp;&nbsp;'),
+//		'#disabled' => TRUE,
+		
+	);
+	$form['cloning_deletion']['cloning']['clo_stop_restrict'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('clo_stop_restrict', ''),
+  		'#size' => 10,
+ 		'#description' => t('restriction site'),
+//		'#disabled' => TRUE,
+		
+	);
+  	$form['cloning_deletion']['deletion'] = array(
+  		'#type' => 'fieldset',
+  		'#title' => t('Options for Deletion'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+  	$form['cloning_deletion']['deletion']['del_start_offset'] = array(
+  		'#type' => 'textfield',
+  		'#title' => t('Set offset'),
+  		'#default_value' => variable_get('del_start_offset', 0),
+  		'#size' => 2,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('start offset: &nbsp;&nbsp;'),
+		'#field_suffix' => t('bp inside'),
+//  		'#disabled' => TRUE,
+	);
+	$form['cloning_deletion']['deletion']['del_stop_offset'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('del_stop_offset', 0),
+  		'#size' => 2,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('stop offset: &nbsp;&nbsp;'),
+		'#field_suffix' => t('bp inside'),
+//		'#disabled' => TRUE,
+	);
+	$form['cloning_deletion']['deletion']['del_addon_type'] = array(
+  		'#type' => 'radios',
+  		'#title' => t('Add-ons: Enter sequence to add to primer 3\' ends'),
+		'#default_value' => variable_get('del_addon_type','kan'),
+  		'#options' => array(
+    		'kan' => t('Kan primers 20 bps'),
+			'cat' => t('Cat primers 20 bps'),
+			'no' => t('no add-ons'),
+  			'yours' => t('Your sequence'),			
+		),
+  		'#attributes' => array(	'OnClick' => "change_download_primer_form()")
+  	);
+  	$form['cloning_deletion']['deletion']['del_start_add_ons'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('del_start_add_ons', ''),
+  		'#size' => 20,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('start (fwd) primer add-ons&nbsp;'),
+//  		'#disabled' => TRUE,
+		
+	);
+	$form['cloning_deletion']['deletion']['del_stop_add_ons'] = array(
+  		'#type' => 'textfield',
+//  		'#title' => t('Input the base pair range of download sequence'),
+  		'#default_value' => variable_get('del_stop_add_ons', ''),
+  		'#size' => 20,
+ 		// 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  		'#field_prefix' => t('stop (rev) primer add-ons&nbsp;&nbsp;'),
+//		'#disabled' => TRUE,
+		
+	);
+	$form['select_field'] = array(
+  		'#type' => 'fieldset',
+		'#title' => t('Step 3: Select fields you want to download:'),
+  		'#collapsible' => FALSE,
+  		'#collapsed' => FALSE,
+  	);
+  	$form['select_field']['veg_id'] = array(
+  		'#title' => t('EG ID'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('veg_id', 1),
+  		
+  	);
+  	$form['select_field']['vname'] = array(
+  		'#title' => t('Gene Name'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vname', 1),
+  		
+  	);
+  	$form['select_field']['vbnum'] = array(
+  		'#title' => t('b#'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vbnum', 1),
+  		
+  	);
+  	$form['select_field']['vlength'] = array(
+  		'#title' => t('gene length'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vlength', 1),
+  		
+  	);
+  	$form['select_field']['vstart_pr'] = array(
+  		'#title' => t('start primer'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vstart_pr', 1),
+  		
+  	);
+  	$form['select_field']['vstart_co'] = array(
+  		'#title' => t('start codon'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vstart_co', 1),
+  		
+  	);
+  	$form['select_field']['vstop_co'] = array(
+  		'#title' => t('stop codon'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vstop_co', 1),
+  		
+  	);
+  	$form['select_field']['vstop_pr'] = array(
+  		'#title' => t('stop primer'),
+  		'#type' => 'checkbox',
+  		'#default_value' => variable_get('vstop_pr', 1),
+  		
+  	);
+  	
+  	$form['submit'] = array('#type' => 'submit', '#value' => t('Download'));
+  	return $form;
+}
+function download_sequence_form($form, &$form_state){
+
+	$form['#attributes'] = array('name'=>'sequence_form');
+  $form['sequence_filter'] = array(
+  	'#type' => 'fieldset',
+  	'#title' => t('Download Options'),
+  	'#collapsible' => FALSE,
+  	'#collapsed' => FALSE,
+  );
+  $form['sequence_filter']['genome_name'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Select a download sequence'),
+	'#default_value' => variable_get('database_name','ECOLI_3'),
+  	'#options' => array(
+  		'ECOLI_3' => t('E. coli K-12 MG1655 U00096.3'),
+    	'ECOLI_2' => t('E. coli K-12 MG1655 U00096.2'),
+  		'ECOLI_1' => t('E. coli K-12 MG1655 U00096.1'),
+  	),
+  	'#attributes' => array(
+      	'OnClick' => "change_sequence()",
+  	)
+	);
+	
+	$form['sequence_filter']['from'] = array(
+  	'#type' => 'textfield',
+  	'#title' => t('Input the base pair range of download sequence'),
+  	'#default_value' => variable_get('from', ''),
+  	'#size' => 10,
+ // 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  	'#field_prefix' => t('From:'),
+	'#field_suffix' => t('bp'),
+	);
+	$form['sequence_filter']['to'] = array(
+  	'#type' => 'textfield',
+   	'#default_value' => variable_get('to', ''),
+  	'#size' => 10,
+ // 	'#description' => t('This page is displayed when the requested document is denied to the current user. If unsure, specify nothing.'),
+  	'#field_prefix' => t('To:'),
+	'#field_suffix' => t('bp')
+	);
+  $form['sequence_filter']['radio'] = array(
+  '#type' => 'radios',
+  '#title' => t('Reverse complement'),
+  '#default_value' => variable_get('radio', '0'),
+  '#options' => array('1'=>t('Yes'), '0'=>t('No')),
+);
+
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Download'));
+  $form['#submit'][] = 'submit_sequence_form';
+  return $form;
+}
+function  download_sequence_form_validate($form, &$form_state) {
+    $from = $form_state['values']['from'];
+    $to = $form_state['values']['to'];
+    $message = '';
+    if (!$from) {
+        form_set_error('from', 'Please enter the From value.');
+        $message.= 'Please enter the From value\n';
+    }
+    if (!$to) {
+        form_set_error('to', 'Please enter the To value.');
+        $message.= 'Please enter the To value.';
+    }
+    if ($to < $from) {
+    	form_set_error('to', 'The value of To must be larger than the value of From.');
+    }
+        $message.= 'The value of To must be larger than the value of From.\n';
+    }
+   
+function download_sequence()
+{
+	$build['content'] = array(
+		'this_does_not_matter_too_much2' 
+			=> array(
+				'form' => drupal_get_form('download_sequence_form'),
+			),
+        
+    );
+    
+	return $build;	
+//	drupal_add_js('sites/all/modules/ecogene_download/ecogene_download.js', 'file');
+//	
+//	$content = '';
+//	$content .= '
+//			<form id="sequence_form" name="sequence_form"  onsubmit="submit_sequence_download(this)" method="post">
+//
+//			<table>
+//				<tbody>
+//				<tr align="left">
+//					<td colspan="2">
+//					<font size="2"><b>* Select a download sequence</b></font>&nbsp;&nbsp;<a href="" onclick="hintwin()">Sequence information</a>
+//					</td>
+//				</tr>
+//				<tr>
+//   					<td> &nbsp;&nbsp;&nbsp;<select name="genome_name" onchange="change_sequence(this.form)">
+//											<option value="" selected="selected">-- Select a genome Sequence --</option>
+//											<option value="ECOLI_2"> E. coli K-12 MG1655 U00096.2 </option>
+//											<option value="ECOLI_1"> E. coli K-12 MG1655 U00096.1 </option>
+//											</select>       
+//					</td>
+//				</tr>
+//				<tr align="left">
+//					<td><br><font size="2"><b>* Input the base pair range of download sequence</b></font><br>
+//					</td>
+//				</tr>
+//				<tr>
+//					<td>&nbsp;&nbsp;&nbsp;<br>From:<input name="from" value="" type="text">&nbsp;&nbsp;(BP)
+//					</td>
+// 				</tr>
+// 				<tr>  
+//   					<td>&nbsp;&nbsp;To:&nbsp;&nbsp;<input name="to" value="" type="text">&nbsp;&nbsp;(BP)
+//   					</td>
+//				</tr>
+//				<tr>
+//					<td ><br><b>* Reverse complement? </b>
+//					</td>
+//				</tr>
+//				<tr>
+//   					<td>&nbsp;&nbsp;&nbsp;<br><input name="radio" checked="checked" type="radio" value=0> No &nbsp;&nbsp;&nbsp;	<input name="radio" type="radio" value=1>Yes
+//					</td>
+//				</tr>
+//				<tr>
+//					<td><br><input value="Submit" type="submit"> &nbsp;&nbsp;&nbsp;<input value="Reset " type="reset">
+//					</td>
+//				</tr>
+//				<tr>
+//					<td><br><b>Instruction:</b><br>This utility allows users to download just a part of the genome <br>DNA sequence they are interested in.  Users can reverse complement the DNA sequence by choosing the "Yes" radio button.
+//					</td>
+//				</tr>
+//				</tbody>
+//		</table>
+//		</form>';
+//	return $content;
+}
+
+function ecogene_download_store_data($cache_id, $rows,$type='csv') {
+  global $user;
+  
+  $output = '';
+  $user_id = (empty($user->uid)) ? session_id() : $user->uid;
+  foreach ($rows as $row) {
+	   if($type=='txt'){
+	    	$output .= implode("\t", $row) . "\r\n";
+	   }elseif($type=='csv'){
+	   		foreach ($row as $index => $column) {
+	      		$row[$index] = '"' . str_replace('"', '""', $column) . '"';
+	    	}
+	   	 	$output .= implode(',', $row) . "\n";
+	   }else{
+	   		foreach ($row as $index => $column) {
+	      		$row[$index] = '"' . str_replace('"', '""', $column) . '"';
+	    	}
+	   	 	$output .= implode(',', $row) . "\n";
+	   }
+  }
+ 
+  cache_set($cache_id . '_' . $user_id, $output, 'cache', REQUEST_TIME + 300);//keep the report for at least 5 minutes.
+   
+  return array('user' => $user_id, 'report' => $cache_id);
+}
+
+
+
+function ecogene_download_get_data($cache_id, $user_id,$type='csv') {
+
+	
+  global $user;
+  $user_check = (empty($user->uid)) ? $user_id : $user->uid;
+  $csv_data = cache_get($cache_id . '_' . $user_check, 'cache');
+
+  if (!$csv_data || $user_id != $user_check) {
+    drupal_set_message(t("The data could not be retrieved. It's possible the data might have expired. Re-submit the  page and try to retrieve the CSV file again."), 'error');
+    drupal_not_found();
+    exit();
+  }
+  else {
+    ob_end_clean();
+     if($type=='txt'){
+	    $http_headers = array(
+	      'Pragma' => 'private',
+	      'Expires' => '0',
+	      'Cache-Control' => 'private, must-revalidate',
+	      'Content-Transfer-Encoding' => 'binary',
+	      'Content-Length' => strlen($csv_data->data),
+	      'Content-Disposition' => 'filename="' . $cache_id . '.txt"',
+	      'Content-Type' => 'text/plain'
+	    );
+     }elseif($type=='csv'){
+	     $http_headers = array(
+	      'Pragma' => 'private',
+	      'Expires' => '0',
+	      'Cache-Control' => 'private, must-revalidate',
+	      'Content-Transfer-Encoding' => 'binary',
+	      'Content-Length' => strlen($csv_data->data),
+	      'Content-Disposition' => 'attachment; filename="' . $cache_id . '.csv"',
+	      'Content-Type' => 'text/csv'
+	    );
+     }
+    foreach ($http_headers as $header => $value) {
+      $value = preg_replace('/\r?\n(?!\t| )/', '', $value);
+      drupal_add_http_header($header, $value);
+    }
+
+    print $csv_data->data;
+    exit();
+  }
+}
+
+
